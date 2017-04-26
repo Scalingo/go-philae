@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/Scalingo/philae-go/prober"
+	"github.com/Scalingo/go-philae/prober"
 )
 
 type PhilaeProbe struct {

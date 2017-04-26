@@ -3,7 +3,7 @@ package prober
 import (
 	"testing"
 
-	"github.com/Scalingo/philae-go/sampleprobe"
+	"github.com/Scalingo/go-philae/sampleprobe"
 	. "github.com/smartystreets/goconvey/convey"
 )
 
