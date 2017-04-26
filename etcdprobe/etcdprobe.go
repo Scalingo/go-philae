@@ -19,11 +19,11 @@ func NewEtcdProbe(name string, client etcd.KeysAPI) EtcdProbe {
 	}
 }
 
-func (p EtcdProbe) Name() {
+func (p EtcdProbe) Name() string {
 	return p.name
 }
 
-func Check() error {
+func (p EtcdProbe) Check() error {
 	_, err := p.kapi.Get(context.Background(), "/", nil)
 	if err != nil {
 		return errgo.Notef(err, "Unable to contact server")
