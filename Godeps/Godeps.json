@@ -1,0 +1,52 @@
+{
+	"ImportPath": "github.com/Scalingo/go-philae",
+	"GoVersion": "go1.8",
+	"GodepVersion": "v79",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/jtolds/gls",
+			"Rev": "9a4a02dbe491bef4bab3c24fd9f3087d6c4c6690"
+		},
+		{
+			"ImportPath": "github.com/smartystreets/assertions",
+			"Comment": "1.6.0-6-g40711f7",
+			"Rev": "40711f7748186bbf9c99977cd89f21ce1a229447"
+		},
+		{
+			"ImportPath": "github.com/smartystreets/assertions/internal/go-render/render",
+			"Comment": "1.6.0-6-g40711f7",
+			"Rev": "40711f7748186bbf9c99977cd89f21ce1a229447"
+		},
+		{
+			"ImportPath": "github.com/smartystreets/assertions/internal/oglematchers",
+			"Comment": "1.6.0-6-g40711f7",
+			"Rev": "40711f7748186bbf9c99977cd89f21ce1a229447"
+		},
+		{
+			"ImportPath": "github.com/smartystreets/goconvey/convey",
+			"Comment": "1.6.1-18-ge685429",
+			"Rev": "e685429a6dbf02127704ee883ed879afb3d94cb5"
+		},
+		{
+			"ImportPath": "github.com/smartystreets/goconvey/convey/gotest",
+			"Comment": "1.6.1-18-ge685429",
+			"Rev": "e685429a6dbf02127704ee883ed879afb3d94cb5"
+		},
+		{
+			"ImportPath": "github.com/smartystreets/goconvey/convey/reporting",
+			"Comment": "1.6.1-18-ge685429",
+			"Rev": "e685429a6dbf02127704ee883ed879afb3d94cb5"
+		},
+		{
+			"ImportPath": "gopkg.in/errgo.v1",
+			"Rev": "1a3d4d77253d47458a42542b4c0bf709fcd5d715"
+		},
+		{
+			"ImportPath": "gopkg.in/jarcoal/httpmock.v1",
+			"Rev": "cf52904a3cf0f78f199ecade6a6df8e245d5b25a"
+		}
+	]
+}
