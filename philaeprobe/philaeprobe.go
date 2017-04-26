@@ -2,66 +2,24 @@ package philaeprobe
 
 import (
 	"encoding/json"
-	"net/http"
+	"io"
 
 	errgo "gopkg.in/errgo.v1"
 
+	"github.com/Scalingo/go-philae/httpprobe"
 	"github.com/Scalingo/go-philae/prober"
 )
 
 type PhilaeProbe struct {
-	name     string
-	endpoint string
-	user     string
-	password string
+	http httpprobe.HTTPProbe
 }
 
-func NewPhilaeProbe(name, endpoint string) PhilaeProbe {
-	return PhilaeProbe{
-		name:     name,
-		endpoint: endpoint,
-		user:     "",
-		password: "",
-	}
-}
+type PhilaeChecker struct{}
 
-func NewAuthenticatedPhilaeProbe(name, endpoint, user, password string) PhilaeProbe {
-	return PhilaeProbe{
-		name:     name,
-		endpoint: endpoint,
-		user:     user,
-		password: password,
-	}
-}
-
-func (p PhilaeProbe) Name() string {
-	return p.name
-}
-
-func (p PhilaeProbe) Check() error {
-	client := &http.Client{}
-
-	req, err := http.NewRequest("GET", p.endpoint, nil)
-	if err != nil {
-		return errgo.Notef(err, "Unable to create request")
-	}
-
-	if p.user != "" || p.password != "" {
-		req.SetBasicAuth(p.user, p.password)
-	}
-
-	resp, err := client.Do(req)
-	if err != nil {
-		return errgo.Notef(err, "Unable to send request")
-	}
-
-	if resp.Status[0] != '2' && resp.Status[0] != '3' {
-		return errgo.Notef(err, "Invalid return code")
-	}
-
+func (_ PhilaeChecker) Check(body io.Reader) error {
 	var result prober.Result
 
-	err = json.NewDecoder(resp.Body).Decode(&result)
+	err := json.NewDecoder(body).Decode(&result)
 	if err != nil {
 		return errgo.Notef(err, "Invalid json")
 	}
@@ -71,4 +29,24 @@ func (p PhilaeProbe) Check() error {
 	}
 
 	return nil
+}
+
+func NewPhilaeProbe(name, endpoint string) PhilaeProbe {
+	return PhilaeProbe{
+		http: httpprobe.NewCheckedHTTPProbe(name, endpoint, PhilaeChecker{}),
+	}
+}
+
+func NewAuthenticatedPhilaeProbe(name, endpoint, user, password string) PhilaeProbe {
+	return PhilaeProbe{
+		http: httpprobe.NewAuthenticatedCheckedHTTPProbe(name, endpoint, user, password, PhilaeChecker{}),
+	}
+}
+
+func (p PhilaeProbe) Name() string {
+	return p.http.Name()
+}
+
+func (p PhilaeProbe) Check() error {
+	return p.http.Check()
 }
