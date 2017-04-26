@@ -3,7 +3,7 @@ package prober
 // Probe define a minimal set of methods that a probe should implement
 type Probe interface {
 	Name() string
-	Check() bool
+	Check() error
 }
 
 // Prober entrypoint of the philae api. It will retain a set of probe and run
@@ -22,6 +22,7 @@ type Result struct {
 type ProbeResult struct {
 	Name    string `json:"name"`
 	Healthy bool   `json:"healthy"`
+	Comment string `json:"comment"`
 }
 
 func NewProber() *Prober {
@@ -37,9 +38,17 @@ func (p *Prober) Check() *Result {
 	probesResult := make([]*ProbeResult, len(p.probes))
 	healthy := true
 	for i, probe := range p.probes {
+		err := probe.Check()
+		probe_healthy := true
+		comment := ""
+		if err != nil {
+			comment = err.Error()
+			probe_healthy = false
+		}
 		probesResult[i] = &ProbeResult{
 			Name:    probe.Name(),
-			Healthy: probe.Check(),
+			Healthy: probe_healthy,
+			Comment: comment,
 		}
 		if !probesResult[i].Healthy {
 			healthy = false

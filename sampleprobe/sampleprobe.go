@@ -1,5 +1,7 @@
 package sampleprobe
 
+import errgo "gopkg.in/errgo.v1"
+
 // Used for tests only
 
 type SampleProbe struct {
@@ -18,6 +20,9 @@ func (s SampleProbe) Name() string {
 	return s.name
 }
 
-func (s SampleProbe) Check() bool {
-	return s.result
+func (s SampleProbe) Check() error {
+	if s.result {
+		return nil
+	}
+	return errgo.New("error")
 }

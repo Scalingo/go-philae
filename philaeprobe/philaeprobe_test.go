@@ -11,12 +11,17 @@ import (
 func TestPhilaeProbe(t *testing.T) {
 	Convey("With a unaivalable server", t, func() {
 		p := NewPhilaeProbe("http", "http://localhost:6666")
-		So(p.Check(), ShouldBeFalse)
+		err := p.Check()
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldStartWith, "Unable to send request")
 	})
 
 	Convey("With an invalid url", t, func() {
 		p := NewPhilaeProbe("http", "0xde:ad:be:ef")
-		So(p.Check(), ShouldBeFalse)
+
+		err := p.Check()
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldStartWith, "Unable to create request")
 	})
 
 	Convey("With a server responding 5XX", t, func() {
@@ -26,7 +31,9 @@ func TestPhilaeProbe(t *testing.T) {
 			httpmock.NewStringResponder(500, `Error`))
 
 		p := NewPhilaeProbe("http", "http://scalingo.com/")
-		So(p.Check(), ShouldBeFalse)
+		err := p.Check()
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldStartWith, "Invalid return code")
 	})
 
 	Convey("With a server responding 2XX but an invalid json", t, func() {
@@ -35,7 +42,9 @@ func TestPhilaeProbe(t *testing.T) {
 		httpmock.RegisterResponder("GET", "http://scalingo.com/",
 			httpmock.NewStringResponder(200, `Error`))
 		p := NewPhilaeProbe("http", "http://scalingo.com/")
-		So(p.Check(), ShouldBeFalse)
+		err := p.Check()
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldStartWith, "Invalid json")
 	})
 
 	Convey("With a server responding 2XX but an unhealthy probe", t, func() {
@@ -44,7 +53,9 @@ func TestPhilaeProbe(t *testing.T) {
 		httpmock.RegisterResponder("GET", "http://scalingo.com/",
 			httpmock.NewStringResponder(200, `{"healthy": false, "probes": []}`))
 		p := NewPhilaeProbe("http", "http://scalingo.com/")
-		So(p.Check(), ShouldBeFalse)
+		err := p.Check()
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldStartWith, "Node not healthy")
 	})
 
 	Convey("With a server responding 2XX and an healthy probe", t, func() {
@@ -53,6 +64,6 @@ func TestPhilaeProbe(t *testing.T) {
 		httpmock.RegisterResponder("GET", "http://scalingo.com/",
 			httpmock.NewStringResponder(200, `{"healthy": true, "probes": []}`))
 		p := NewPhilaeProbe("http", "http://scalingo.com/")
-		So(p.Check(), ShouldBeTrue)
+		So(p.Check(), ShouldBeNil)
 	})
 }

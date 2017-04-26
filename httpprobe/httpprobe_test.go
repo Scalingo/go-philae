@@ -11,12 +11,16 @@ import (
 func TestHttpProbe(t *testing.T) {
 	Convey("With a unaivalable server", t, func() {
 		p := NewHTTPProbe("http", "http://localhost:6666")
-		So(p.Check(), ShouldBeFalse)
+		err := p.Check()
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldStartWith, "Unable to send request")
 	})
 
 	Convey("With an invalid url", t, func() {
 		p := NewHTTPProbe("http", "0xde:ad:be:ef")
-		So(p.Check(), ShouldBeFalse)
+		err := p.Check()
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldStartWith, "Unable to create request")
 	})
 
 	Convey("With a server responding 5XX", t, func() {
@@ -26,7 +30,10 @@ func TestHttpProbe(t *testing.T) {
 			httpmock.NewStringResponder(500, `Error`))
 
 		p := NewHTTPProbe("http", "http://scalingo.com/")
-		So(p.Check(), ShouldBeFalse)
+
+		err := p.Check()
+		So(err, ShouldNotBeNil)
+		So(err.Error(), ShouldStartWith, "Invalid return code")
 
 	})
 	Convey("With a server responding 2XX", t, func() {
@@ -36,7 +43,7 @@ func TestHttpProbe(t *testing.T) {
 			httpmock.NewStringResponder(200, `Error`))
 
 		p := NewHTTPProbe("http", "http://scalingo.com/")
-		So(p.Check(), ShouldBeTrue)
+		So(p.Check(), ShouldBeNil)
 
 	})
 }

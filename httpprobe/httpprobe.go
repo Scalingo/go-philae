@@ -1,6 +1,10 @@
 package httpprobe
 
-import "net/http"
+import (
+	"net/http"
+
+	errgo "gopkg.in/errgo.v1"
+)
 
 type HTTPProbe struct {
 	name     string
@@ -31,12 +35,12 @@ func (p HTTPProbe) Name() string {
 	return p.name
 }
 
-func (p HTTPProbe) Check() bool {
+func (p HTTPProbe) Check() error {
 	client := &http.Client{}
 
 	req, err := http.NewRequest("GET", p.endpoint, nil)
 	if err != nil {
-		return false
+		return errgo.Notef(err, "Unable to create request")
 	}
 
 	if p.user != "" || p.password != "" {
@@ -45,12 +49,12 @@ func (p HTTPProbe) Check() bool {
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return false
+		return errgo.Notef(err, "Unable to send request")
 	}
 
 	if resp.Status[0] != '2' && resp.Status[0] != '3' {
-		return false
+		return errgo.Newf("Invalid return code: %s", resp.Status)
 	}
 
-	return true
+	return nil
 }
