@@ -16,14 +16,6 @@ func TestPhilaeProbe(t *testing.T) {
 		So(err.Error(), ShouldStartWith, "Unable to send request")
 	})
 
-	Convey("With an invalid url", t, func() {
-		p := NewPhilaeProbe("http", "0xde:ad:be:ef")
-
-		err := p.Check()
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldStartWith, "Unable to create request")
-	})
-
 	Convey("With a server responding 5XX", t, func() {
 		httpmock.Activate()
 		defer httpmock.DeactivateAndReset()

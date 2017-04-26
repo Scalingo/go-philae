@@ -16,13 +16,6 @@ func TestHttpProbe(t *testing.T) {
 		So(err.Error(), ShouldStartWith, "Unable to send request")
 	})
 
-	Convey("With an invalid url", t, func() {
-		p := NewHTTPProbe("http", "0xde:ad:be:ef")
-		err := p.Check()
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldStartWith, "Unable to create request")
-	})
-
 	Convey("With a server responding 5XX", t, func() {
 		httpmock.Activate()
 		defer httpmock.DeactivateAndReset()
@@ -44,6 +37,5 @@ func TestHttpProbe(t *testing.T) {
 
 		p := NewHTTPProbe("http", "http://scalingo.com/")
 		So(p.Check(), ShouldBeNil)
-
 	})
 }
