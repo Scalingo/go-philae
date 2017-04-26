@@ -2,7 +2,7 @@ package redisprobe
 
 import (
 	errgo "gopkg.in/errgo.v1"
-	redis "gopkg.in/redis.v3"
+	redis "gopkg.in/redis.v4"
 )
 
 type RedisProbe struct {
@@ -26,7 +26,7 @@ func (p RedisProbe) Name() string {
 func (p RedisProbe) Check() error {
 	client := redis.NewClient(&redis.Options{
 		Addr:     p.host,
-		Password: "",
+		Password: p.password,
 		DB:       0,
 	})
 	defer client.Close()

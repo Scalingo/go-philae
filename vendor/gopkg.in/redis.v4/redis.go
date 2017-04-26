@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 
-	"gopkg.in/redis.v3/internal"
-	"gopkg.in/redis.v3/internal/pool"
+	"gopkg.in/redis.v4/internal"
+	"gopkg.in/redis.v4/internal/errors"
+	"gopkg.in/redis.v4/internal/pool"
 )
 
-var Logger *log.Logger
+// Redis nil reply, .e.g. when key does not exist.
+const Nil = errors.Nil
 
 func SetLogger(logger *log.Logger) {
 	internal.Logger = logger
@@ -22,25 +24,25 @@ type baseClient struct {
 }
 
 func (c *baseClient) String() string {
-	return fmt.Sprintf("Redis<%s db:%d>", c.opt.Addr, c.opt.DB)
+	return fmt.Sprintf("Redis<%s db:%d>", c.getAddr(), c.opt.DB)
 }
 
-func (c *baseClient) conn() (*pool.Conn, error) {
-	cn, err := c.connPool.Get()
+func (c *baseClient) conn() (*pool.Conn, bool, error) {
+	cn, isNew, err := c.connPool.Get()
 	if err != nil {
-		return nil, err
+		return nil, false, err
 	}
 	if !cn.Inited {
 		if err := c.initConn(cn); err != nil {
 			_ = c.connPool.Remove(cn, err)
-			return nil, err
+			return nil, false, err
 		}
 	}
-	return cn, err
+	return cn, isNew, nil
 }
 
 func (c *baseClient) putConn(cn *pool.Conn, err error, allowTimeout bool) bool {
-	if isBadConn(err, allowTimeout) {
+	if errors.IsBadConn(err, allowTimeout) {
 		_ = c.connPool.Remove(cn, err)
 		return false
 	}
@@ -52,38 +54,40 @@ func (c *baseClient) putConn(cn *pool.Conn, err error, allowTimeout bool) bool {
 func (c *baseClient) initConn(cn *pool.Conn) error {
 	cn.Inited = true
 
-	if c.opt.Password == "" && c.opt.DB == 0 {
+	if c.opt.Password == "" && c.opt.DB == 0 && !c.opt.ReadOnly {
 		return nil
 	}
 
 	// Temp client for Auth and Select.
 	client := newClient(c.opt, pool.NewSingleConnPool(cn))
-
-	if c.opt.Password != "" {
-		if err := client.Auth(c.opt.Password).Err(); err != nil {
-			return err
+	_, err := client.Pipelined(func(pipe *Pipeline) error {
+		if c.opt.Password != "" {
+			pipe.Auth(c.opt.Password)
 		}
-	}
 
-	if c.opt.DB > 0 {
-		if err := client.Select(c.opt.DB).Err(); err != nil {
-			return err
+		if c.opt.DB > 0 {
+			pipe.Select(c.opt.DB)
 		}
-	}
 
-	return nil
+		if c.opt.ReadOnly {
+			pipe.ReadOnly()
+		}
+
+		return nil
+	})
+	return err
 }
 
-func (c *baseClient) process(cmd Cmder) {
+func (c *baseClient) Process(cmd Cmder) error {
 	for i := 0; i <= c.opt.MaxRetries; i++ {
 		if i > 0 {
 			cmd.reset()
 		}
 
-		cn, err := c.conn()
+		cn, _, err := c.conn()
 		if err != nil {
 			cmd.setErr(err)
-			return
+			return err
 		}
 
 		readTimeout := cmd.readTimeout()
@@ -97,20 +101,22 @@ func (c *baseClient) process(cmd Cmder) {
 		if err := writeCmd(cn, cmd); err != nil {
 			c.putConn(cn, err, false)
 			cmd.setErr(err)
-			if err != nil && shouldRetry(err) {
+			if err != nil && errors.IsRetryable(err) {
 				continue
 			}
-			return
+			return err
 		}
 
 		err = cmd.readReply(cn)
 		c.putConn(cn, err, readTimeout != nil)
-		if err != nil && shouldRetry(err) {
+		if err != nil && errors.IsRetryable(err) {
 			continue
 		}
 
-		return
+		return err
 	}
+
+	return cmd.Err()
 }
 
 func (c *baseClient) closed() bool {
@@ -134,6 +140,10 @@ func (c *baseClient) Close() error {
 	return retErr
 }
 
+func (c *baseClient) getAddr() string {
+	return c.opt.Addr
+}
+
 //------------------------------------------------------------------------------
 
 // Client is a Redis client representing a pool of zero or more
@@ -141,21 +151,23 @@ func (c *baseClient) Close() error {
 // goroutines.
 type Client struct {
 	baseClient
-	commandable
+	cmdable
 }
+
+var _ Cmdable = (*Client)(nil)
 
 func newClient(opt *Options, pool pool.Pooler) *Client {
 	base := baseClient{opt: opt, connPool: pool}
-	return &Client{
+	client := &Client{
 		baseClient: base,
-		commandable: commandable{
-			process: base.process,
-		},
+		cmdable:    cmdable{base.Process},
 	}
+	return client
 }
 
 // NewClient returns a client to the Redis Server specified by Options.
 func NewClient(opt *Options) *Client {
+	opt.init()
 	return newClient(opt, newConnPool(opt))
 }
 
@@ -165,10 +177,68 @@ func (c *Client) PoolStats() *PoolStats {
 	return &PoolStats{
 		Requests: s.Requests,
 		Hits:     s.Hits,
-		Waits:    s.Waits,
 		Timeouts: s.Timeouts,
 
 		TotalConns: s.TotalConns,
 		FreeConns:  s.FreeConns,
 	}
+}
+
+func (c *Client) Pipeline() *Pipeline {
+	pipe := Pipeline{
+		exec: c.pipelineExec,
+	}
+	pipe.cmdable.process = pipe.Process
+	pipe.statefulCmdable.process = pipe.Process
+	return &pipe
+}
+
+func (c *Client) Pipelined(fn func(*Pipeline) error) ([]Cmder, error) {
+	return c.Pipeline().pipelined(fn)
+}
+
+func (c *Client) pipelineExec(cmds []Cmder) error {
+	var retErr error
+	failedCmds := cmds
+	for i := 0; i <= c.opt.MaxRetries; i++ {
+		cn, _, err := c.conn()
+		if err != nil {
+			setCmdsErr(failedCmds, err)
+			return err
+		}
+
+		if i > 0 {
+			resetCmds(failedCmds)
+		}
+		failedCmds, err = execCmds(cn, failedCmds)
+		c.putConn(cn, err, false)
+		if err != nil && retErr == nil {
+			retErr = err
+		}
+		if len(failedCmds) == 0 {
+			break
+		}
+	}
+	return retErr
+}
+
+func (c *Client) pubSub() *PubSub {
+	return &PubSub{
+		base: baseClient{
+			opt:      c.opt,
+			connPool: pool.NewStickyConnPool(c.connPool.(*pool.ConnPool), false),
+		},
+	}
+}
+
+// Subscribe subscribes the client to the specified channels.
+func (c *Client) Subscribe(channels ...string) (*PubSub, error) {
+	pubsub := c.pubSub()
+	return pubsub, pubsub.Subscribe(channels...)
+}
+
+// PSubscribe subscribes the client to the given patterns.
+func (c *Client) PSubscribe(channels ...string) (*PubSub, error) {
+	pubsub := c.pubSub()
+	return pubsub, pubsub.PSubscribe(channels...)
 }

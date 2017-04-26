@@ -28,7 +28,7 @@ func (p MongoProbe) Check() error {
 	}
 	defer session.Close()
 
-	_, err = session.DatabaseNames()
+	err = session.Ping()
 	if err != nil {
 		return errgo.Notef(err, "Unable to send query")
 	}

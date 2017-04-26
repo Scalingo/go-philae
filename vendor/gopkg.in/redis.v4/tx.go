@@ -4,70 +4,82 @@ import (
 	"errors"
 	"fmt"
 
-	"gopkg.in/redis.v3/internal"
-	"gopkg.in/redis.v3/internal/pool"
+	"gopkg.in/redis.v4/internal"
+	ierrors "gopkg.in/redis.v4/internal/errors"
+	"gopkg.in/redis.v4/internal/pool"
+	"gopkg.in/redis.v4/internal/proto"
 )
+
+// Redis transaction failed.
+const TxFailedErr = ierrors.RedisError("redis: transaction failed")
 
 var errDiscard = errors.New("redis: Discard can be used only inside Exec")
 
-// Multi implements Redis transactions as described in
+// Tx implements Redis transactions as described in
 // http://redis.io/topics/transactions. It's NOT safe for concurrent use
 // by multiple goroutines, because Exec resets list of watched keys.
 // If you don't need WATCH it is better to use Pipeline.
-//
-// TODO(vmihailenco): rename to Tx and rework API
-type Multi struct {
-	commandable
-
-	base *baseClient
+type Tx struct {
+	cmdable
+	statefulCmdable
+	baseClient
 
 	cmds   []Cmder
 	closed bool
 }
 
-// Watch creates new transaction and marks the keys to be watched
-// for conditional execution of a transaction.
-func (c *Client) Watch(keys ...string) (*Multi, error) {
-	tx := c.Multi()
-	if err := tx.Watch(keys...).Err(); err != nil {
-		tx.Close()
-		return nil, err
-	}
-	return tx, nil
-}
+var _ BaseCmdable = (*Tx)(nil)
 
-// Deprecated. Use Watch instead.
-func (c *Client) Multi() *Multi {
-	multi := &Multi{
-		base: &baseClient{
+func (c *Client) newTx() *Tx {
+	tx := Tx{
+		baseClient: baseClient{
 			opt:      c.opt,
 			connPool: pool.NewStickyConnPool(c.connPool.(*pool.ConnPool), true),
 		},
 	}
-	multi.commandable.process = multi.process
-	return multi
+	tx.cmdable.process = tx.Process
+	tx.statefulCmdable.process = tx.Process
+	return &tx
 }
 
-func (c *Multi) process(cmd Cmder) {
-	if c.cmds == nil {
-		c.base.process(cmd)
-	} else {
-		c.cmds = append(c.cmds, cmd)
+func (c *Client) Watch(fn func(*Tx) error, keys ...string) error {
+	tx := c.newTx()
+	if len(keys) > 0 {
+		if err := tx.Watch(keys...).Err(); err != nil {
+			_ = tx.close()
+			return err
+		}
 	}
+	retErr := fn(tx)
+	if err := tx.close(); err != nil && retErr == nil {
+		retErr = err
+	}
+	return retErr
 }
 
-// Close closes the client, releasing any open resources.
-func (c *Multi) Close() error {
+func (c *Tx) Process(cmd Cmder) error {
+	if c.cmds == nil {
+		return c.baseClient.Process(cmd)
+	}
+	c.cmds = append(c.cmds, cmd)
+	return nil
+}
+
+// close closes the transaction, releasing any open resources.
+func (c *Tx) close() error {
+	if c.closed {
+		return nil
+	}
 	c.closed = true
 	if err := c.Unwatch().Err(); err != nil {
 		internal.Logf("Unwatch failed: %s", err)
 	}
-	return c.base.Close()
+	return c.baseClient.Close()
 }
 
 // Watch marks the keys to be watched for conditional execution
 // of a transaction.
-func (c *Multi) Watch(keys ...string) *StatusCmd {
+func (c *Tx) Watch(keys ...string) *StatusCmd {
 	args := make([]interface{}, 1+len(keys))
 	args[0] = "WATCH"
 	for i, key := range keys {
@@ -79,7 +91,7 @@ func (c *Multi) Watch(keys ...string) *StatusCmd {
 }
 
 // Unwatch flushes all the previously watched keys for a transaction.
-func (c *Multi) Unwatch(keys ...string) *StatusCmd {
+func (c *Tx) Unwatch(keys ...string) *StatusCmd {
 	args := make([]interface{}, 1+len(keys))
 	args[0] = "UNWATCH"
 	for i, key := range keys {
@@ -91,7 +103,7 @@ func (c *Multi) Unwatch(keys ...string) *StatusCmd {
 }
 
 // Discard discards queued commands.
-func (c *Multi) Discard() error {
+func (c *Tx) Discard() error {
 	if c.cmds == nil {
 		return errDiscard
 	}
@@ -99,7 +111,7 @@ func (c *Multi) Discard() error {
 	return nil
 }
 
-// Exec executes all previously queued commands in a transaction
+// MultiExec executes all previously queued commands in a transaction
 // and restores the connection state to normal.
 //
 // When using WATCH, EXEC will execute commands only if the watched keys
@@ -108,13 +120,13 @@ func (c *Multi) Discard() error {
 // Exec always returns list of commands. If transaction fails
 // TxFailedErr is returned. Otherwise Exec returns error of the first
 // failed command or nil.
-func (c *Multi) Exec(f func() error) ([]Cmder, error) {
+func (c *Tx) MultiExec(fn func() error) ([]Cmder, error) {
 	if c.closed {
 		return nil, pool.ErrClosed
 	}
 
 	c.cmds = []Cmder{NewStatusCmd("MULTI")}
-	if err := f(); err != nil {
+	if err := fn(); err != nil {
 		return nil, err
 	}
 	c.cmds = append(c.cmds, NewSliceCmd("EXEC"))
@@ -129,18 +141,18 @@ func (c *Multi) Exec(f func() error) ([]Cmder, error) {
 	// Strip MULTI and EXEC commands.
 	retCmds := cmds[1 : len(cmds)-1]
 
-	cn, err := c.base.conn()
+	cn, _, err := c.conn()
 	if err != nil {
 		setCmdsErr(retCmds, err)
 		return retCmds, err
 	}
 
 	err = c.execCmds(cn, cmds)
-	c.base.putConn(cn, err, false)
+	c.putConn(cn, err, false)
 	return retCmds, err
 }
 
-func (c *Multi) execCmds(cn *pool.Conn, cmds []Cmder) error {
+func (c *Tx) execCmds(cn *pool.Conn, cmds []Cmder) error {
 	err := writeCmd(cn, cmds...)
 	if err != nil {
 		setCmdsErr(cmds[1:len(cmds)-1], err)
@@ -161,7 +173,7 @@ func (c *Multi) execCmds(cn *pool.Conn, cmds []Cmder) error {
 	}
 
 	// Parse number of replies.
-	line, err := readLine(cn)
+	line, err := cn.Rd.ReadLine()
 	if err != nil {
 		if err == Nil {
 			err = TxFailedErr
@@ -169,7 +181,7 @@ func (c *Multi) execCmds(cn *pool.Conn, cmds []Cmder) error {
 		setCmdsErr(cmds[1:len(cmds)-1], err)
 		return err
 	}
-	if line[0] != '*' {
+	if line[0] != proto.ArrayReply {
 		err := fmt.Errorf("redis: expected '*', but got line %q", line)
 		setCmdsErr(cmds[1:len(cmds)-1], err)
 		return err

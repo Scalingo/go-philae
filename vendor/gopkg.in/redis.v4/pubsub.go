@@ -5,53 +5,38 @@ import (
 	"net"
 	"time"
 
-	"gopkg.in/redis.v3/internal"
-	"gopkg.in/redis.v3/internal/pool"
+	"gopkg.in/redis.v4/internal"
+	"gopkg.in/redis.v4/internal/errors"
+	"gopkg.in/redis.v4/internal/pool"
 )
-
-// Posts a message to the given channel.
-func (c *Client) Publish(channel, message string) *IntCmd {
-	req := NewIntCmd("PUBLISH", channel, message)
-	c.Process(req)
-	return req
-}
 
 // PubSub implements Pub/Sub commands as described in
 // http://redis.io/topics/pubsub. It's NOT safe for concurrent use by
 // multiple goroutines.
 type PubSub struct {
-	base *baseClient
+	base baseClient
 
 	channels []string
 	patterns []string
-
-	nsub int // number of active subscriptions
 }
 
-// Deprecated. Use Subscribe/PSubscribe instead.
-func (c *Client) PubSub() *PubSub {
-	return &PubSub{
-		base: &baseClient{
-			opt:      c.opt,
-			connPool: pool.NewStickyConnPool(c.connPool.(*pool.ConnPool), false),
-		},
+func (c *PubSub) conn() (*pool.Conn, bool, error) {
+	cn, isNew, err := c.base.conn()
+	if err != nil {
+		return nil, false, err
 	}
+	if isNew {
+		c.resubscribe()
+	}
+	return cn, isNew, nil
 }
 
-// Subscribes the client to the specified channels.
-func (c *Client) Subscribe(channels ...string) (*PubSub, error) {
-	pubsub := c.PubSub()
-	return pubsub, pubsub.Subscribe(channels...)
-}
-
-// Subscribes the client to the given patterns.
-func (c *Client) PSubscribe(channels ...string) (*PubSub, error) {
-	pubsub := c.PubSub()
-	return pubsub, pubsub.PSubscribe(channels...)
+func (c *PubSub) putConn(cn *pool.Conn, err error) {
+	c.base.putConn(cn, err, true)
 }
 
 func (c *PubSub) subscribe(redisCmd string, channels ...string) error {
-	cn, err := c.base.conn()
+	cn, _, err := c.conn()
 	if err != nil {
 		return err
 	}
@@ -71,8 +56,7 @@ func (c *PubSub) subscribe(redisCmd string, channels ...string) error {
 func (c *PubSub) Subscribe(channels ...string) error {
 	err := c.subscribe("SUBSCRIBE", channels...)
 	if err == nil {
-		c.channels = append(c.channels, channels...)
-		c.nsub += len(channels)
+		c.channels = appendIfNotExists(c.channels, channels...)
 	}
 	return err
 }
@@ -81,25 +65,9 @@ func (c *PubSub) Subscribe(channels ...string) error {
 func (c *PubSub) PSubscribe(patterns ...string) error {
 	err := c.subscribe("PSUBSCRIBE", patterns...)
 	if err == nil {
-		c.patterns = append(c.patterns, patterns...)
-		c.nsub += len(patterns)
+		c.patterns = appendIfNotExists(c.patterns, patterns...)
 	}
 	return err
-}
-
-func remove(ss []string, es ...string) []string {
-	if len(es) == 0 {
-		return ss[:0]
-	}
-	for _, e := range es {
-		for i, s := range ss {
-			if s == e {
-				ss = append(ss[:i], ss[i+1:]...)
-				break
-			}
-		}
-	}
-	return ss
 }
 
 // Unsubscribes the client from the given channels, or from all of
@@ -127,7 +95,7 @@ func (c *PubSub) Close() error {
 }
 
 func (c *PubSub) Ping(payload string) error {
-	cn, err := c.base.conn()
+	cn, _, err := c.conn()
 	if err != nil {
 		return err
 	}
@@ -165,20 +133,6 @@ func (m *Message) String() string {
 	return fmt.Sprintf("Message<%s: %s>", m.Channel, m.Payload)
 }
 
-// TODO: remove PMessage if favor of Message
-
-// Message matching a pattern-matching subscription received as result
-// of a PUBLISH command issued by another client.
-type PMessage struct {
-	Channel string
-	Pattern string
-	Payload string
-}
-
-func (m *PMessage) String() string {
-	return fmt.Sprintf("PMessage<%s: %s>", m.Channel, m.Payload)
-}
-
 // Pong received as result of a PING command issued by another client.
 type Pong struct {
 	Payload string
@@ -205,7 +159,7 @@ func (c *PubSub) newMessage(reply []interface{}) (interface{}, error) {
 			Payload: reply[2].(string),
 		}, nil
 	case "pmessage":
-		return &PMessage{
+		return &Message{
 			Pattern: reply[1].(string),
 			Channel: reply[2].(string),
 			Payload: reply[3].(string),
@@ -223,11 +177,7 @@ func (c *PubSub) newMessage(reply []interface{}) (interface{}, error) {
 // is not received in time. This is low-level API and most clients
 // should use ReceiveMessage.
 func (c *PubSub) ReceiveTimeout(timeout time.Duration) (interface{}, error) {
-	if c.nsub == 0 {
-		c.resubscribe()
-	}
-
-	cn, err := c.base.conn()
+	cn, _, err := c.conn()
 	if err != nil {
 		return nil, err
 	}
@@ -243,9 +193,9 @@ func (c *PubSub) ReceiveTimeout(timeout time.Duration) (interface{}, error) {
 	return c.newMessage(cmd.Val())
 }
 
-// Receive returns a message as a Subscription, Message, PMessage,
-// Pong or error. See PubSub example for details. This is low-level
-// API and most clients should use ReceiveMessage.
+// Receive returns a message as a Subscription, Message, Pong or error.
+// See PubSub example for details. This is low-level API and most clients
+// should use ReceiveMessage.
 func (c *PubSub) Receive() (interface{}, error) {
 	return c.ReceiveTimeout(0)
 }
@@ -262,7 +212,7 @@ func (c *PubSub) receiveMessage(timeout time.Duration) (*Message, error) {
 	for {
 		msgi, err := c.ReceiveTimeout(timeout)
 		if err != nil {
-			if !isNetworkError(err) {
+			if !errors.IsNetwork(err) {
 				return nil, err
 			}
 
@@ -293,21 +243,9 @@ func (c *PubSub) receiveMessage(timeout time.Duration) (*Message, error) {
 			// Ignore.
 		case *Message:
 			return msg, nil
-		case *PMessage:
-			return &Message{
-				Channel: msg.Channel,
-				Pattern: msg.Pattern,
-				Payload: msg.Payload,
-			}, nil
 		default:
 			return nil, fmt.Errorf("redis: unknown message: %T", msgi)
 		}
-	}
-}
-
-func (c *PubSub) putConn(cn *pool.Conn, err error) {
-	if !c.base.putConn(cn, err, true) {
-		c.nsub = 0
 	}
 }
 
@@ -325,4 +263,32 @@ func (c *PubSub) resubscribe() {
 			internal.Logf("PSubscribe failed: %s", err)
 		}
 	}
+}
+
+func remove(ss []string, es ...string) []string {
+	if len(es) == 0 {
+		return ss[:0]
+	}
+	for _, e := range es {
+		for i, s := range ss {
+			if s == e {
+				ss = append(ss[:i], ss[i+1:]...)
+				break
+			}
+		}
+	}
+	return ss
+}
+
+func appendIfNotExists(ss []string, es ...string) []string {
+loop:
+	for _, e := range es {
+		for _, s := range ss {
+			if s == e {
+				continue loop
+			}
+		}
+		ss = append(ss, e)
+	}
+	return ss
 }

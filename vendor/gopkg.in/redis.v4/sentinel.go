@@ -8,8 +8,8 @@ import (
 	"sync"
 	"time"
 
-	"gopkg.in/redis.v3/internal"
-	"gopkg.in/redis.v3/internal/pool"
+	"gopkg.in/redis.v4/internal"
+	"gopkg.in/redis.v4/internal/pool"
 )
 
 //------------------------------------------------------------------------------
@@ -25,7 +25,7 @@ type FailoverOptions struct {
 	// Following options are copied from Options struct.
 
 	Password string
-	DB       int64
+	DB       int
 
 	MaxRetries int
 
@@ -64,49 +64,52 @@ func (opt *FailoverOptions) options() *Options {
 // goroutines.
 func NewFailoverClient(failoverOpt *FailoverOptions) *Client {
 	opt := failoverOpt.options()
+	opt.init()
+
 	failover := &sentinelFailover{
 		masterName:    failoverOpt.MasterName,
 		sentinelAddrs: failoverOpt.SentinelAddrs,
 
 		opt: opt,
 	}
-	base := baseClient{
-		opt:      opt,
-		connPool: failover.Pool(),
 
-		onClose: func() error {
-			return failover.Close()
+	client := Client{
+		baseClient: baseClient{
+			opt:      opt,
+			connPool: failover.Pool(),
+
+			onClose: func() error {
+				return failover.Close()
+			},
 		},
 	}
-	return &Client{
-		baseClient: base,
-		commandable: commandable{
-			process: base.process,
-		},
-	}
+	client.cmdable.process = client.Process
+
+	return &client
 }
 
 //------------------------------------------------------------------------------
 
 type sentinelClient struct {
+	cmdable
 	baseClient
-	commandable
 }
 
 func newSentinel(opt *Options) *sentinelClient {
-	base := baseClient{
-		opt:      opt,
-		connPool: newConnPool(opt),
+	opt.init()
+	client := sentinelClient{
+		baseClient: baseClient{
+			opt:      opt,
+			connPool: newConnPool(opt),
+		},
 	}
-	return &sentinelClient{
-		baseClient:  base,
-		commandable: commandable{process: base.process},
-	}
+	client.cmdable = cmdable{client.Process}
+	return &client
 }
 
 func (c *sentinelClient) PubSub() *PubSub {
 	return &PubSub{
-		base: &baseClient{
+		base: baseClient{
 			opt:      c.opt,
 			connPool: pool.NewStickyConnPool(c.connPool.(*pool.ConnPool), false),
 		},
