@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
+	handlers "github.com/Scalingo/go-handlers"
 	"github.com/Scalingo/go-philae/prober"
 )
 
@@ -20,5 +21,12 @@ func (handler PhilaeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 func NewHandler(prober *prober.Prober) http.Handler {
 	return PhilaeHandler{
 		prober: prober,
+	}
+}
+
+func NewScalingoHandler(prober *prober.Prober) handlers.HandlerFunc {
+	return func(response http.ResponseWriter, _ *http.Request, _ map[string]string) error {
+		json.NewEncoder(response).Encode(prober.Check())
+		return nil
 	}
 }

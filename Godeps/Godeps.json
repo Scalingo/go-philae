@@ -7,6 +7,20 @@
 	],
 	"Deps": [
 		{
+			"ImportPath": "github.com/Scalingo/go-handlers",
+			"Comment": "v0.8",
+			"Rev": "be0046912ade8e37703876e6262824b186378ede"
+		},
+		{
+			"ImportPath": "github.com/Soulou/errgo-rollbar",
+			"Rev": "2f7de2c8755a840bfcf34b2b6508e86eba0fbccc"
+		},
+		{
+			"ImportPath": "github.com/codegangsta/negroni",
+			"Comment": "v0.2.0-57-g6edff56",
+			"Rev": "6edff56736fa7bd546812f149e8cdaae61e5a38f"
+		},
+		{
 			"ImportPath": "github.com/coreos/etcd/client",
 			"Comment": "v3.0.0-beta.0-1168-g462eb51",
 			"Rev": "462eb511c568484f319ef9729952a6eb3dd0652a"
@@ -24,6 +38,11 @@
 		{
 			"ImportPath": "github.com/gopherjs/gopherjs/js",
 			"Rev": "72e303cb5f235b23471872477b57e573dc1c71d0"
+		},
+		{
+			"ImportPath": "github.com/gorilla/mux",
+			"Comment": "v1.1-20-g7804150",
+			"Rev": "780415097119f6f61c55475fe59b66f3c3e9ea53"
 		},
 		{
 			"ImportPath": "github.com/jtolds/gls",
@@ -58,6 +77,11 @@
 			"ImportPath": "github.com/smartystreets/goconvey/convey/reporting",
 			"Comment": "1.6.1-18-ge685429",
 			"Rev": "e685429a6dbf02127704ee883ed879afb3d94cb5"
+		},
+		{
+			"ImportPath": "github.com/stvp/rollbar",
+			"Comment": "v0.4.0-6-g3eb4713",
+			"Rev": "3eb4713e2655cd1be805795be31b3f85b74b05fd"
 		},
 		{
 			"ImportPath": "github.com/ugorji/go/codec",
