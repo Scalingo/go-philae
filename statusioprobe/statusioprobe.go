@@ -30,14 +30,14 @@ func (p StatusIOProbe) Check() error {
 }
 
 func (_ StatusIOChecker) Check(body io.Reader) error {
-	var result StatusIOResult
+	var result StatusIOResponse
 
 	err := json.NewDecoder(body).Decode(&result)
 	if err != nil {
 		return errgo.Notef(err, "Invalid json")
 	}
 
-	if result.Overall.StatusCode >= 400 {
+	if result.Result.Overall.StatusCode >= 400 {
 		return errgo.Newf("Incident reported!")
 	}
 
