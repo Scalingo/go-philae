@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"net/http"
 
-	handlers "github.com/Scalingo/go-handlers"
 	"github.com/Scalingo/go-philae/prober"
+	"github.com/gorilla/mux"
 )
 
 type PhilaeHandler struct {
@@ -24,9 +24,9 @@ func NewHandler(prober *prober.Prober) http.Handler {
 	}
 }
 
-func NewScalingoHandler(prober *prober.Prober) handlers.HandlerFunc {
-	return func(response http.ResponseWriter, _ *http.Request, _ map[string]string) error {
-		json.NewEncoder(response).Encode(prober.Check())
-		return nil
-	}
+func NewPhilaeRouter(router http.Handler, prober *prober.Prober) *mux.Router {
+	globalRouter := mux.NewRouter()
+	globalRouter.Handle("/_health", NewHandler(prober))
+	globalRouter.Handle("/{any:.+}", router)
+	return globalRouter
 }
