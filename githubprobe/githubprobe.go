@@ -23,7 +23,7 @@ func (_ GithubChecker) Check(body io.Reader) error {
 		return errgo.Notef(err, "Invalid json")
 	}
 
-	if result.Status != "major" {
+	if result.Status == "major" {
 		return errgo.Newf("Github is probably down")
 	}
 	return nil
