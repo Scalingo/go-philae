@@ -7,8 +7,8 @@ type StatusIOResponse struct {
 }
 
 type StatusIOResult struct {
-	Overall *StatusIOOverallResult `json:"overall"`
-	Status  *StatusIOStatusResult  `json:"status"`
+	Overall *StatusIOOverallResult  `json:"status_overall"`
+	Status  *[]StatusIOStatusResult `json:"status"`
 }
 
 type StatusIOOverallResult struct {
