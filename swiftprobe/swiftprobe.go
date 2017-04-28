@@ -27,7 +27,7 @@ func (p SwiftProbe) Name() string {
 }
 
 func (p SwiftProbe) Check() error {
-	c = swift.Connection{
+	c := swift.Connection{
 		UserName: p.username,
 		ApiKey:   p.password,
 		AuthUrl:  p.url,
