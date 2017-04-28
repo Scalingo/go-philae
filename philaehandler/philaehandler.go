@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Scalingo/go-philae/prober"
+	"github.com/gorilla/mux"
 )
 
 type PhilaeHandler struct {
@@ -21,4 +22,11 @@ func NewHandler(prober *prober.Prober) http.Handler {
 	return PhilaeHandler{
 		prober: prober,
 	}
+}
+
+func NewPhilaeRouter(router http.Handler, prober *prober.Prober) *mux.Router {
+	globalRouter := mux.NewRouter()
+	globalRouter.Handle("/_health", NewHandler(prober))
+	globalRouter.Handle("/{any:.+}", router)
+	return globalRouter
 }

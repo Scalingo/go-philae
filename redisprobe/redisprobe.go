@@ -1,6 +1,8 @@
 package redisprobe
 
 import (
+	"net/url"
+
 	errgo "gopkg.in/errgo.v1"
 	redis "gopkg.in/redis.v4"
 )
@@ -9,6 +11,17 @@ type RedisProbe struct {
 	name     string
 	password string
 	host     string
+}
+
+func NewRedisProbeFromURL(name, serviceUrl string) RedisProbe {
+	url, _ := url.Parse(serviceUrl)
+	password := ""
+
+	if url.User != nil {
+		password, _ = url.User.Password()
+	}
+
+	return NewRedisProbe(name, url.Host, password)
 }
 
 func NewRedisProbe(name, host, password string) RedisProbe {
