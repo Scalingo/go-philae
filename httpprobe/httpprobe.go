@@ -1,7 +1,9 @@
 package httpprobe
 
 import (
+	"net"
 	"net/http"
+	"time"
 
 	errgo "gopkg.in/errgo.v1"
 )
@@ -41,7 +43,7 @@ func (p HTTPProbe) Name() string {
 }
 
 func (p HTTPProbe) Check() error {
-	client := &http.Client{}
+	client := NewTimeoutClient()
 
 	req, err := http.NewRequest("GET", p.endpoint, nil)
 	if err != nil {
@@ -67,4 +69,19 @@ func (p HTTPProbe) Check() error {
 	}
 
 	return nil
+}
+
+func NewTimeoutClient() *http.Client {
+	return &http.Client{
+		Transport: &http.Transport{
+			Dial: func(network, addr string) (net.Conn, error) {
+				conn, err := net.DialTimeout(network, addr, 1*time.Second)
+				if err != nil {
+					return nil, err
+				}
+				conn.SetDeadline(time.Now().Add(2 * time.Second))
+				return conn, nil
+			},
+		},
+	}
 }
