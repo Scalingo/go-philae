@@ -1,7 +1,6 @@
 package httpprobe
 
 import (
-	"log"
 	"net"
 	"net/http"
 	"time"
@@ -52,8 +51,6 @@ func (p HTTPProbe) Check() error {
 	}
 
 	if p.options.ExpectedStatusCode == 0 {
-		log.Println("Hello World")
-		log.Println(resp.Status)
 		if resp.Status[0] != '2' && resp.Status[0] != '3' {
 			return errgo.Newf("Invalid return code: %s", resp.Status)
 		}
