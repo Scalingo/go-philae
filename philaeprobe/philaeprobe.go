@@ -2,6 +2,7 @@ package philaeprobe
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 
 	errgo "gopkg.in/errgo.v1"
@@ -25,7 +26,13 @@ func (_ PhilaeChecker) Check(body io.Reader) error {
 	}
 
 	if !result.Healthy {
-		return errgo.Newf("Node not healthy")
+		reason := ""
+		for _, probe := range result.Probes {
+			if !probe.Healthy {
+				reason += probe.Name + " is down (" + probe.Comment + "),"
+			}
+		}
+		return errors.New(reason)
 	}
 
 	return nil
