@@ -31,7 +31,9 @@ func (_ GithubChecker) Check(body io.Reader) error {
 
 func NewGithubProbe(name string) GithubProbe {
 	return GithubProbe{
-		http: httpprobe.NewCheckedHTTPProbe(name, "https://status.github.com/api/status.json", GithubChecker{}),
+		http: httpprobe.NewHTTPProbe(name, "https://status.github.com/api/status.json", httpprobe.HTTPOptions{
+			Checker: GithubChecker{},
+		}),
 	}
 }
 

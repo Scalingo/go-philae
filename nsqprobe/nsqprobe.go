@@ -12,7 +12,7 @@ type NSQProbe struct {
 
 func NewNSQProbe(name, host string, port int) NSQProbe {
 	return NSQProbe{
-		http: httpprobe.NewHTTPProbe(name, "http://"+host+":"+strconv.Itoa(port)+"/ping"),
+		http: httpprobe.NewHTTPProbe(name, "http://"+host+":"+strconv.Itoa(port)+"/ping", httpprobe.HTTPOptions{}),
 	}
 }
 

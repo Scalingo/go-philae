@@ -17,7 +17,9 @@ type StatusIOChecker struct{}
 
 func NewStatusIOProbe(name string, id string) StatusIOProbe {
 	return StatusIOProbe{
-		http: httpprobe.NewCheckedHTTPProbe(name, "https://api.status.io/1.0/status/"+id, StatusIOChecker{}),
+		http: httpprobe.NewHTTPProbe(name, "https://api.status.io/1.0/status/"+id, httpprobe.HTTPOptions{
+			Checker: StatusIOChecker{},
+		}),
 	}
 }
 

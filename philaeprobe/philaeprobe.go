@@ -40,13 +40,9 @@ func (_ PhilaeChecker) Check(body io.Reader) error {
 
 func NewPhilaeProbe(name, endpoint string) PhilaeProbe {
 	return PhilaeProbe{
-		http: httpprobe.NewCheckedHTTPProbe(name, endpoint, PhilaeChecker{}),
-	}
-}
-
-func NewAuthenticatedPhilaeProbe(name, endpoint, user, password string) PhilaeProbe {
-	return PhilaeProbe{
-		http: httpprobe.NewAuthenticatedCheckedHTTPProbe(name, endpoint, user, password, PhilaeChecker{}),
+		http: httpprobe.NewHTTPProbe(name, endpoint, httpprobe.HTTPOptions{
+			Checker: PhilaeChecker{},
+		}),
 	}
 }
 

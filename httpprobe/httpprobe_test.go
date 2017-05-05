@@ -10,7 +10,7 @@ import (
 
 func TestHttpProbe(t *testing.T) {
 	Convey("With a unaivalable server", t, func() {
-		p := NewHTTPProbe("http", "http://localhost:6666")
+		p := NewHTTPProbe("http", "http://localhost:6666", HTTPOptions{})
 		err := p.Check()
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldStartWith, "Unable to send request")
@@ -22,7 +22,7 @@ func TestHttpProbe(t *testing.T) {
 		httpmock.RegisterResponder("GET", "http://scalingo.com/",
 			httpmock.NewStringResponder(500, `Error`))
 
-		p := NewHTTPProbe("http", "http://scalingo.com/")
+		p := NewHTTPProbe("http", "http://scalingo.com/", HTTPOptions{})
 
 		err := p.Check()
 		So(err, ShouldNotBeNil)
@@ -35,7 +35,7 @@ func TestHttpProbe(t *testing.T) {
 		httpmock.RegisterResponder("GET", "http://scalingo.com/",
 			httpmock.NewStringResponder(200, `Error`))
 
-		p := NewHTTPProbe("http", "http://scalingo.com/")
+		p := NewHTTPProbe("http", "http://scalingo.com/", HTTPOptions{})
 		So(p.Check(), ShouldBeNil)
 	})
 }

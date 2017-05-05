@@ -1,6 +1,7 @@
 package httpprobe
 
 import (
+	"log"
 	"net"
 	"net/http"
 	"time"
@@ -11,31 +12,22 @@ import (
 type HTTPProbe struct {
 	name     string
 	endpoint string
-	user     string
-	password string
-	checker  HTTPChecker
+	options  HTTPOptions
 }
 
-func NewAuthenticatedCheckedHTTPProbe(name, endpoint, user, password string, checker HTTPChecker) HTTPProbe {
+type HTTPOptions struct {
+	Username           string
+	Password           string
+	Checker            HTTPChecker
+	ExpectedStatusCode int
+}
+
+func NewHTTPProbe(name, endpoint string, opts HTTPOptions) HTTPProbe {
 	return HTTPProbe{
 		name:     name,
 		endpoint: endpoint,
-		user:     user,
-		password: password,
-		checker:  checker,
+		options:  opts,
 	}
-}
-
-func NewAuthenticatedHTTPProbe(name, endpoint, user, password string) HTTPProbe {
-	return NewAuthenticatedCheckedHTTPProbe(name, endpoint, user, password, AlwaysTrueHTTPChecker{})
-}
-
-func NewCheckedHTTPProbe(name, endpoint string, checker HTTPChecker) HTTPProbe {
-	return NewAuthenticatedCheckedHTTPProbe(name, endpoint, "", "", checker)
-}
-
-func NewHTTPProbe(name, endpoint string) HTTPProbe {
-	return NewCheckedHTTPProbe(name, endpoint, AlwaysTrueHTTPChecker{})
 }
 
 func (p HTTPProbe) Name() string {
@@ -50,8 +42,8 @@ func (p HTTPProbe) Check() error {
 		return errgo.Notef(err, "Unable to create request")
 	}
 
-	if p.user != "" || p.password != "" {
-		req.SetBasicAuth(p.user, p.password)
+	if p.options.Username != "" || p.options.Password != "" {
+		req.SetBasicAuth(p.options.Username, p.options.Password)
 	}
 
 	resp, err := client.Do(req)
@@ -59,13 +51,23 @@ func (p HTTPProbe) Check() error {
 		return errgo.Notef(err, "Unable to send request")
 	}
 
-	if resp.Status[0] != '2' && resp.Status[0] != '3' {
-		return errgo.Newf("Invalid return code: %s", resp.Status)
+	if p.options.ExpectedStatusCode == 0 {
+		log.Println("Hello World")
+		log.Println(resp.Status)
+		if resp.Status[0] != '2' && resp.Status[0] != '3' {
+			return errgo.Newf("Invalid return code: %s", resp.Status)
+		}
+	} else {
+		if resp.StatusCode != p.options.ExpectedStatusCode {
+			return errgo.Newf("Unexpected status code: %v (expected: %v)", resp.StatusCode, p.options.ExpectedStatusCode)
+		}
 	}
 
-	err = p.checker.Check(resp.Body)
-	if err != nil {
-		return err
+	if p.options.Checker != nil {
+		err = p.options.Checker.Check(resp.Body)
+		if err != nil {
+			return err
+		}
 	}
 
 	return nil
