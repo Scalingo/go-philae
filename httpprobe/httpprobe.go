@@ -74,11 +74,11 @@ func NewTimeoutClient() *http.Client {
 	return &http.Client{
 		Transport: &http.Transport{
 			Dial: func(network, addr string) (net.Conn, error) {
-				conn, err := net.DialTimeout(network, addr, 1*time.Second)
+				conn, err := net.DialTimeout(network, addr, 2*time.Second)
 				if err != nil {
 					return nil, err
 				}
-				conn.SetDeadline(time.Now().Add(2 * time.Second))
+				conn.SetDeadline(time.Now().Add(1 * time.Second))
 				return conn, nil
 			},
 		},

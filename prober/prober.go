@@ -1,5 +1,10 @@
 package prober
 
+import (
+	"errors"
+	"time"
+)
+
 // Probe define a minimal set of methods that a probe should implement
 type Probe interface {
 	Name() string
@@ -35,28 +40,56 @@ func (p *Prober) AddProbe(probe Probe) {
 
 // Check will run the check of each probes added and return the result in a Result struct
 func (p *Prober) Check() *Result {
-	probesResult := make([]*ProbeResult, len(p.probes))
+	probesResults := make([]*ProbeResult, len(p.probes))
 	healthy := true
-	for i, probe := range p.probes {
-		err := probe.Check()
-		probe_healthy := true
-		comment := ""
-		if err != nil {
-			comment = err.Error()
-			probe_healthy = false
-		}
-		probesResult[i] = &ProbeResult{
-			Name:    probe.Name(),
-			Healthy: probe_healthy,
-			Comment: comment,
-		}
-		if !probesResult[i].Healthy {
+	resultChan := make(chan *ProbeResult, len(p.probes))
+	for _, probe := range p.probes {
+		go p.CheckOneProbe(probe, resultChan)
+	}
+
+	for i := 0; i < len(p.probes); i++ {
+		probeResult := <-resultChan
+		if !probeResult.Healthy {
 			healthy = false
 		}
+		probesResults[i] = probeResult
 	}
 
 	return &Result{
 		Healthy: healthy,
-		Probes:  probesResult,
+		Probes:  probesResults,
 	}
+}
+
+func (p *Prober) CheckOneProbe(probe Probe, res chan *ProbeResult) {
+	probeRes := make(chan error)
+	var err error
+
+	timer := time.NewTimer(2 * time.Second)
+
+	select {
+	case e := <-probeRes:
+		err = e
+	case <-timer.C:
+		err = errors.New("Probe timeout")
+	}
+
+	probe_healthy := true
+	comment := ""
+	if err != nil {
+		comment = err.Error()
+		probe_healthy = false
+	}
+	probeResult := &ProbeResult{
+		Name:    probe.Name(),
+		Healthy: probe_healthy,
+		Comment: comment,
+	}
+
+	res <- probeResult
+}
+
+func ProberWrapper(probe Probe, res chan error) {
+	err := probe.Check()
+	res <- err
 }
