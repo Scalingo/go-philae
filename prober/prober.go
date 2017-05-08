@@ -67,6 +67,8 @@ func (p *Prober) CheckOneProbe(probe Probe, res chan *ProbeResult) {
 
 	timer := time.NewTimer(2 * time.Second)
 
+	go ProberWrapper(probe, probeRes)
+
 	select {
 	case e := <-probeRes:
 		err = e
