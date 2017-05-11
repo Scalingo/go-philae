@@ -49,6 +49,7 @@ func (p HTTPProbe) Check() error {
 	if err != nil {
 		return errgo.Notef(err, "Unable to send request")
 	}
+	defer resp.Body.Close()
 
 	if p.options.ExpectedStatusCode == 0 {
 		if resp.Status[0] != '2' && resp.Status[0] != '3' {
