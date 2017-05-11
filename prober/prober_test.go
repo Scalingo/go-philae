@@ -1,6 +1,7 @@
 package prober
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/Scalingo/go-philae/sampleprobe"
@@ -17,10 +18,8 @@ func TestProber(t *testing.T) {
 
 		So(res.Healthy, ShouldBeTrue)
 		So(len(res.Probes), ShouldEqual, 2)
-		So(res.Probes[0].Name, ShouldEqual, "a")
-		So(res.Probes[0].Healthy, ShouldBeTrue)
-		So(res.Probes[1].Name, ShouldEqual, "b")
-		So(res.Probes[1].Healthy, ShouldBeTrue)
+		So(validateProbe(res.Probes, "a", true), ShouldBeNil)
+		So(validateProbe(res.Probes, "b", true), ShouldBeNil)
 	})
 
 	Convey("With unhealthy probes", t, func() {
@@ -32,10 +31,8 @@ func TestProber(t *testing.T) {
 
 		So(res.Healthy, ShouldBeFalse)
 		So(len(res.Probes), ShouldEqual, 2)
-		So(res.Probes[0].Name, ShouldEqual, "a")
-		So(res.Probes[0].Healthy, ShouldBeFalse)
-		So(res.Probes[1].Name, ShouldEqual, "b")
-		So(res.Probes[1].Healthy, ShouldBeFalse)
+		So(validateProbe(res.Probes, "a", false), ShouldBeNil)
+		So(validateProbe(res.Probes, "b", false), ShouldBeNil)
 	})
 
 	Convey("With a healthy probe and a unhealthy probe", t, func() {
@@ -47,9 +44,18 @@ func TestProber(t *testing.T) {
 
 		So(res.Healthy, ShouldBeFalse)
 		So(len(res.Probes), ShouldEqual, 2)
-		So(res.Probes[0].Name, ShouldEqual, "a")
-		So(res.Probes[0].Healthy, ShouldBeTrue)
-		So(res.Probes[1].Name, ShouldEqual, "b")
-		So(res.Probes[1].Healthy, ShouldBeFalse)
+		So(validateProbe(res.Probes, "a", true), ShouldBeNil)
+		So(validateProbe(res.Probes, "b", false), ShouldBeNil)
 	})
+}
+
+func validateProbe(probes []*ProbeResult, name string, healthy bool) error {
+	for _, probe := range probes {
+		if probe.Name == name {
+			So(probe.Healthy, ShouldEqual, healthy)
+			return nil
+		}
+	}
+
+	return errors.New("Unable to find node " + name)
 }

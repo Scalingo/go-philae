@@ -19,6 +19,7 @@ type HTTPOptions struct {
 	Password           string
 	Checker            HTTPChecker
 	ExpectedStatusCode int
+	testing            bool
 }
 
 func NewHTTPProbe(name, endpoint string, opts HTTPOptions) HTTPProbe {
@@ -35,6 +36,10 @@ func (p HTTPProbe) Name() string {
 
 func (p HTTPProbe) Check() error {
 	client := NewTimeoutClient()
+
+	if p.options.testing {
+		client = &http.Client{}
+	}
 
 	req, err := http.NewRequest("GET", p.endpoint, nil)
 	if err != nil {
