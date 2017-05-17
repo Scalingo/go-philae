@@ -19,6 +19,8 @@ type HTTPOptions struct {
 	Password           string
 	Checker            HTTPChecker
 	ExpectedStatusCode int
+	DialTimeout        int
+	ResponseTimeout    int
 	testing            bool
 }
 
@@ -35,7 +37,17 @@ func (p HTTPProbe) Name() string {
 }
 
 func (p HTTPProbe) Check() error {
-	client := NewTimeoutClient()
+	dialTimeout := 2
+	responseTimeout := 1
+	if p.options.DialTimeout != 0 {
+		dialTimeout = p.options.DialTimeout
+	}
+
+	if p.options.ResponseTimeout != 0 {
+		responseTimeout = p.options.ResponseTimeout
+	}
+
+	client := NewTimeoutClient(dialTimeout, responseTimeout)
 
 	if p.options.testing {
 		client = &http.Client{}
@@ -76,15 +88,15 @@ func (p HTTPProbe) Check() error {
 	return nil
 }
 
-func NewTimeoutClient() *http.Client {
+func NewTimeoutClient(dialTimeout, responseTimeout int) *http.Client {
 	return &http.Client{
 		Transport: &http.Transport{
 			Dial: func(network, addr string) (net.Conn, error) {
-				conn, err := net.DialTimeout(network, addr, 2*time.Second)
+				conn, err := net.DialTimeout(network, addr, time.Duration(dialTimeout)*time.Second)
 				if err != nil {
 					return nil, err
 				}
-				conn.SetDeadline(time.Now().Add(1 * time.Second))
+				conn.SetDeadline(time.Now().Add(time.Duration(responseTimeout) * time.Second))
 				return conn, nil
 			},
 		},

@@ -38,10 +38,12 @@ func (_ PhilaeChecker) Check(body io.Reader) error {
 	return nil
 }
 
-func NewPhilaeProbe(name, endpoint string) PhilaeProbe {
+func NewPhilaeProbe(name, endpoint string, dialTimeout, responseTimeout int) PhilaeProbe {
 	return PhilaeProbe{
 		http: httpprobe.NewHTTPProbe(name, endpoint, httpprobe.HTTPOptions{
-			Checker: PhilaeChecker{},
+			Checker:         PhilaeChecker{},
+			DialTimeout:     dialTimeout,
+			ResponseTimeout: responseTimeout,
 		}),
 	}
 }
