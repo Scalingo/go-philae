@@ -13,7 +13,7 @@ import (
 
 func TestPhilaeProbe(t *testing.T) {
 	Convey("With a unaivalable server", t, func() {
-		p := NewPhilaeProbe("http", "http://localhost:6666")
+		p := NewPhilaeProbe("http", "http://localhost:6666", 0, 0)
 		err := p.Check()
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldStartWith, "Unable to send request")
@@ -23,7 +23,7 @@ func TestPhilaeProbe(t *testing.T) {
 		ts := launchTestServer(500, "Error")
 		defer ts.Close()
 
-		p := NewPhilaeProbe("http", ts.URL)
+		p := NewPhilaeProbe("http", ts.URL, 0, 0)
 		err := p.Check()
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldStartWith, "Invalid return code")
@@ -33,7 +33,7 @@ func TestPhilaeProbe(t *testing.T) {
 		ts := launchTestServer(200, "Salut salut")
 		defer ts.Close()
 
-		p := NewPhilaeProbe("http", ts.URL)
+		p := NewPhilaeProbe("http", ts.URL, 0, 0)
 		err := p.Check()
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldStartWith, "Invalid json")
@@ -53,7 +53,7 @@ func TestPhilaeProbe(t *testing.T) {
 		ts := launchJSONTestServer(200, result)
 		defer ts.Close()
 
-		p := NewPhilaeProbe("http", ts.URL)
+		p := NewPhilaeProbe("http", ts.URL, 0, 0)
 		err := p.Check()
 		So(err, ShouldNotBeNil)
 		So(err.Error(), ShouldEqual, "node-1 is down (pas bien),")
@@ -67,7 +67,7 @@ func TestPhilaeProbe(t *testing.T) {
 		ts := launchJSONTestServer(200, result)
 		defer ts.Close()
 
-		p := NewPhilaeProbe("http", ts.URL)
+		p := NewPhilaeProbe("http", ts.URL, 0, 0)
 		So(p.Check(), ShouldBeNil)
 	})
 }
