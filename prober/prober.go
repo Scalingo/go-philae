@@ -2,6 +2,7 @@ package prober
 
 import (
 	"errors"
+	"log"
 	"time"
 )
 
@@ -81,6 +82,7 @@ func (p *Prober) CheckOneProbe(probe Probe, res chan *ProbeResult) {
 	if err != nil {
 		comment = err.Error()
 		probe_healthy = false
+		log.Printf("[PHILAE] Probe %s failed, reason: %s\n", probe.Name(), err.Error())
 	}
 	probeResult := &ProbeResult{
 		Name:    probe.Name(),
