@@ -208,3 +208,20 @@ statusioprobe.NewStatusIOProbe(name, id string)
 
 * name: The name of the probe
 * id: The StatusIO service id
+
+### SwiftProbe
+
+Check that a Swift host is up and healthy.
+It creates a new connection and try to authenticate.
+
+#### Usage
+
+```
+swiftprobe.NewSwiftProbe(name, url, region, tenant, username, password string)
+```
+
+* name: The name of the probe
+* url: Url of the Swift host
+* tenant: The tenant name needed to authenticate
+* username: The username needed to authenticate
+* password: The password needed to authenticate
