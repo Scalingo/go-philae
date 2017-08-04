@@ -1,18 +1,18 @@
 # Go Philae
 
-Go philae is the go implementation of our Philae HealthCheck protocol.
+Go Philae is the go implementation of our Philae health check protocol.
 
 ## Architecture
 
 The go-philae library is based around the idea of probe. Each service has some dependencies. Those dependencies are checked using probes.
 
-The prober is the component that will take all probes check everyone of them and return a aggregate result into a single response.
+The prober is the component that will take all probes, check everyone of them, and return an aggregated result into a single response.
 
-Finaly, the handler is a small utility that will take a prober and an existing router and add an `/_health` endpoint to that router configured to run check everytime someone call this route.
+Finally, the handler is a small utility that will take a prober and an existing router and add an `/_health` endpoint to that router. This endpoint is configured to run check every time someone call it.
 
 ## Usage
 
-To use it in an existing project, you will need to add a prober with some probes, pass it to the hander and generate the route.
+To use it in an existing project, you will need to add a prober with some probes, pass it to the handler and generate the route.
 
 ```
 router := handlers.NewRouter("http")
@@ -38,7 +38,7 @@ type Probe interface {
 }
 ```
 
-That's all.
+That's all folks.
 
 ### Convention
 
@@ -51,7 +51,7 @@ That's all.
 
 ### DockerProbe
 
-Check that the docker deamon is runding.
+Check that the docker daemon is running.
 
 #### Usage
 
@@ -77,8 +77,8 @@ etcdprobe.NewEtcdProbe(name string, client etcd.KeysAPI)
 
 ### GithubProbe
 
-Check that github is'nt reporting any issue.
-It use the official github status API to check if there is no "major" problem with the github infrastructure.
+Check that GitHub isn't reporting any issue.
+It use the official GitHub status API to check if there is no "major" problem with the GitHub infrastructure.
 
 #### Usage
 
@@ -90,7 +90,7 @@ githubprobe.NewGithubProbe(name string)
 
 ### HTTPProbe
 
-Check that an http service is running fine.
+Check that an HTTP service is running fine.
 It will send a GET request to an endpoint and check that the response code is in the 2XX or 3XX class.
 
 #### Usage
@@ -114,7 +114,7 @@ HTTPOptions params:
 
 ### MongoProbe
 
-Check that a mongodb database is up and running.
+Check that a MongoDB database is up and running.
 
 #### Usage
 
@@ -136,12 +136,12 @@ nsqprobe.NewNSQProbe(name, host string, port int)
 ```
 
 * name: The name of the probe
-* host: the ip address (or FQDN) of the nsq server
+* host: the IP address (or FQDN) of the nsq server
 * port: The port on which the nsq server is running
 
 ### PhilaeProbe
 
-Check that another service using philae probe is running and healthy.
+Check that another service using Philae probe is running and healthy.
 
 #### Usage
 
@@ -151,11 +151,11 @@ philaeprobe.NewPhilaeProbe(name, endpoint string, dialTimeout, responseTimeout i
 
 * name: The name of the probe
 * endpoint: The philae endpoint (i.e.: "http://test.dev/_health")
-* dialTimeout, responseTimeout: see HTTPPRobe
+* dialTimeout, responseTimeout: see HTTPProbe
 
 ### RedisProbe
 
-Check that a redis server is up and running
+Check that a Redis server is up and running
 
 #### Usage
 
@@ -164,7 +164,7 @@ redisprobe.NewRedisProbe(name, host, password) string
 ```
 
 * name: The name of the probe
-* host: The redis host
+* host: The Redis host
 * password: The password needed to access the database
 
 
@@ -173,7 +173,7 @@ redisprobe.NewRedisProbeFromURL(name, url string)
 ```
 
 * name: The name of the probe
-* url: The url of the redis server (i.e.: "redis://:password@server.org")
+* url: The url of the Redis server (i.e.: "redis://:password@server.org")
 
 ### SampleProbe
 
@@ -186,19 +186,19 @@ sampleprobe.NewSampleProbe(name string, result bool)
 ```
 
 * name: The name of the probe
-* result: Is the check successfull or not
+* result: Is the check successful or not
 
 ```
 sampleprobe.NewTimedSampleProbe(name string, result bool, time time.Duration)
 ```
 
 * name: The name of the probe
-* result: Is the check successfull or not
+* result: Is the check successful or not
 * time: The time the probe will take before returning a result
 
 ### StatusIOProbe
 
-This probe will check that a service using statusIO is healthy
+This probe will check that a service using StatusIO is healthy
 
 #### Usage
 
@@ -207,4 +207,4 @@ statusioprobe.NewStatusIOProbe(name, id string)
 ```
 
 * name: The name of the probe
-* id: The statusIO service id
+* id: The StatusIO service id
