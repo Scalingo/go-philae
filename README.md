@@ -10,7 +10,7 @@ The prober is the component that will take all probes check everyone of them and
 
 Finaly, the handler is a small utility that will take a prober and an existing router and add an `/_health` endpoint to that router configured to run check everytime someone call this route.
 
-## Usage
+## Usage
 
 To use it in an existing project, you will need to add a prober with some probes, pass it to the hander and generate the route.
 
@@ -53,7 +53,7 @@ That's all.
 
 Check that the docker deamon is runding.
 
-#### Usage
+#### Usage
 
 ```
 dockerprobe.NewDockerProbe(name, endpoint string)
@@ -80,7 +80,7 @@ etcdprobe.NewEtcdProbe(name string, client etcd.KeysAPI)
 Check that github is'nt reporting any issue.
 It use the official github status API to check if there is no "major" problem with the github infrastructure.
 
-#### Usage
+#### Usage
 
 ```
 githubprobe.NewGithubProbe(name string)
@@ -196,11 +196,11 @@ sampleprobe.NewTimedSampleProbe(name string, result bool, time time.Duration)
 * result: Is the check successfull or not
 * time: The time the probe will take before returning a result
 
-### StatusIOProbe
+### StatusIOProbe
 
 This probe will check that a service using statusIO is healthy
 
-#### Usage
+#### Usage
 
 ```
 statusioprobe.NewStatusIOProbe(name, id string)
