@@ -22,7 +22,7 @@ func (handler PhilaeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 	duration := time.Now().Sub(start)
 
 	l := handler.logger.WithFields(logrus.Fields{
-		"source":   "philae",
+		"router":   "philae",
 		"duration": duration.String(),
 		"healthy":  result.Healthy,
 	})
