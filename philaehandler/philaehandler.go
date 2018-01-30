@@ -2,16 +2,17 @@ package philaehandler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 
 	"github.com/Scalingo/go-philae/prober"
+	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
 )
 
 type PhilaeHandler struct {
 	prober *prober.Prober
+	logger logrus.FieldLogger
 }
 
 func (handler PhilaeHandler) ServeHTTP(response http.ResponseWriter, request *http.Request) {
@@ -19,19 +20,38 @@ func (handler PhilaeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 	result := handler.prober.Check()
 	json.NewEncoder(response).Encode(result)
 	duration := time.Now().Sub(start)
-	log.Printf("[PHILAE] Probe check done. Duration: %s, Healthy: %t", duration.String(), result.Healthy)
 
-}
+	l := handler.logger.WithFields(logrus.Fields{
+		"router":   "philae",
+		"duration": duration.String(),
+		"healthy":  result.Healthy,
+	})
 
-func NewHandler(prober *prober.Prober) http.Handler {
-	return PhilaeHandler{
-		prober: prober,
+	if result.Healthy {
+		l.Debug()
+	} else {
+		l.Info()
 	}
 }
 
-func NewPhilaeRouter(router http.Handler, prober *prober.Prober) *mux.Router {
+type HandlerOpts struct {
+	Logger logrus.FieldLogger
+}
+
+func NewHandler(prober *prober.Prober, opts HandlerOpts) http.Handler {
+	h := PhilaeHandler{
+		prober: prober,
+		logger: opts.Logger,
+	}
+	if h.logger == nil {
+		h.logger = logrus.New()
+	}
+	return h
+}
+
+func NewPhilaeRouter(router http.Handler, prober *prober.Prober, opts HandlerOpts) *mux.Router {
 	globalRouter := mux.NewRouter()
-	globalRouter.Handle("/_health", NewHandler(prober))
+	globalRouter.Handle("/_health", NewHandler(prober, opts))
 	globalRouter.Handle("/{any:.+}", router)
 	return globalRouter
 }
