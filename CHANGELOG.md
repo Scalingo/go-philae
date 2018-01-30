@@ -1,5 +1,9 @@
 # Changelog
 
+## v2.0.1
+
+* Sirupsen -> sirupsen
+
 ## v2.0.0
 
 * Add ability to configure logger and verbosity of philaehandler

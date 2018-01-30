@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"github.com/Scalingo/go-philae/prober"
-	"github.com/Sirupsen/logrus"
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
 )
 
 type PhilaeHandler struct {
