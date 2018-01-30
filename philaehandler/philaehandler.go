@@ -26,6 +26,7 @@ func (handler PhilaeHandler) ServeHTTP(response http.ResponseWriter, request *ht
 		"duration": duration.String(),
 		"healthy":  result.Healthy,
 	})
+
 	if result.Healthy {
 		l.Debug()
 	} else {
@@ -42,7 +43,7 @@ func NewHandler(prober *prober.Prober, opts HandlerOpts) http.Handler {
 		prober: prober,
 		logger: opts.Logger,
 	}
-	if h.logger != nil {
+	if h.logger == nil {
 		h.logger = logrus.New()
 	}
 	return h
