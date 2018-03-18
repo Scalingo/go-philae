@@ -44,12 +44,12 @@ func TestNSQProbe(t *testing.T) {
 	})
 
 	Convey("With a working server", t, func() {
-		probe := NewNSQProbe("salut", "127.0.0.1", 10001)
+		probe := NewNSQProbe("salut", "127.0.0.1", 10001, nil)
 		So(probe.Check(), ShouldBeNil)
 	})
 
 	Convey("With a non-working server", t, func() {
-		probe := NewNSQProbe("salut", "127.0.0.1", 10000)
+		probe := NewNSQProbe("salut", "127.0.0.1", 10000, nil)
 		So(probe.Check(), ShouldNotBeNil)
 	})
 
