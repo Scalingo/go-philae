@@ -12,9 +12,13 @@ type NSQProbe struct {
 }
 
 func NewNSQProbe(name, host string, port int, tlsConfig *tls.Config) NSQProbe {
+	scheme := "http"
+	if tlsConfig != nil {
+		scheme = "https"
+	}
 	return NSQProbe{
 		http: httpprobe.NewHTTPProbe(
-			name, "http://"+host+":"+strconv.Itoa(port)+"/ping",
+			name, scheme+"://"+host+":"+strconv.Itoa(port)+"/ping",
 			httpprobe.HTTPOptions{TLSConfig: tlsConfig},
 		),
 	}

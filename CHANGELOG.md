@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.1
+
+* nsqprobe: use https scheme if tls config is set
+
 ## v3.0.0
 
 * nsqprobe: add tls.Config argument to handle https test
