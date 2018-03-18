@@ -1,6 +1,7 @@
 package httpprobe
 
 import (
+	"crypto/tls"
 	"net"
 	"net/http"
 	"time"
@@ -21,6 +22,7 @@ type HTTPOptions struct {
 	ExpectedStatusCode int
 	DialTimeout        int
 	ResponseTimeout    int
+	TLSConfig          *tls.Config
 	testing            bool
 }
 
@@ -47,7 +49,7 @@ func (p HTTPProbe) Check() error {
 		responseTimeout = p.options.ResponseTimeout
 	}
 
-	client := NewTimeoutClient(dialTimeout, responseTimeout)
+	client := NewTimeoutClient(dialTimeout, responseTimeout, p.options.TLSConfig)
 
 	if p.options.testing {
 		client = &http.Client{}
@@ -88,9 +90,10 @@ func (p HTTPProbe) Check() error {
 	return nil
 }
 
-func NewTimeoutClient(dialTimeout, responseTimeout int) *http.Client {
+func NewTimeoutClient(dialTimeout, responseTimeout int, tlsconfig *tls.Config) *http.Client {
 	return &http.Client{
 		Transport: &http.Transport{
+			TLSClientConfig: tlsconfig,
 			Dial: func(network, addr string) (net.Conn, error) {
 				conn, err := net.DialTimeout(network, addr, time.Duration(dialTimeout)*time.Second)
 				if err != nil {
