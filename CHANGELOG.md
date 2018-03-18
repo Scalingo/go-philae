@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.0.0
+
+* nsqprobe: add tls.Config argument to handle https test
+
 ## v2.0.1
 
 * Sirupsen -> sirupsen
