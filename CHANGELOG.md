@@ -1,5 +1,9 @@
 # Changelog
 
+## v3.1.0
+
+* tcpprobe: add tcpprobe
+
 ## v3.0.1
 
 * nsqprobe: use https scheme if tls config is set
