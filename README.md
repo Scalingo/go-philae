@@ -225,3 +225,21 @@ swiftprobe.NewSwiftProbe(name, url, region, tenant, username, password string)
 * tenant: The tenant name needed to authenticate
 * username: The username needed to authenticate
 * password: The password needed to authenticate
+
+### TCPProbe
+
+Check that a TCP server accept connection.
+
+#### Usage
+
+```golang
+tcpprobe.NewTCPProbe(name, endpoint string, opts TCPOptions)
+```
+
+* name: The name of the probe
+* endpoint: Endpoint to probe
+
+Options:
+
+* Timeout (default 5s)
+
