@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.1.0
+
+* Add `genericprobe` for Pinger (Ping() error)
+
 ## v4.0.0
 
 * Migrate to context embedded logger
