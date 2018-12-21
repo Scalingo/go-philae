@@ -4,17 +4,15 @@ import (
 	"bytes"
 	"encoding/json"
 	"testing"
-	"time"
 
 	. "github.com/smartystreets/goconvey/convey"
 )
 
 func TestGithubProbe(t *testing.T) {
-	Convey("When github respond healthy", t, func() {
-		response := GithubStatusResponse{
-			Status:        "nothing",
-			LastUpdatedAt: time.Now(),
-		}
+	Convey("When GitHub respond healthy", t, func() {
+		response := GithubStatusResponse{Status: GithubStatusResponseStatus{
+			Indicator: "none",
+		}}
 
 		checker := GithubChecker{}
 
@@ -27,11 +25,10 @@ func TestGithubProbe(t *testing.T) {
 		So(err, ShouldBeNil)
 	})
 
-	Convey("When github respond not healthy", t, func() {
-		response := GithubStatusResponse{
-			Status:        "major",
-			LastUpdatedAt: time.Now(),
-		}
+	Convey("When GitHub respond not healthy", t, func() {
+		response := GithubStatusResponse{Status: GithubStatusResponseStatus{
+			Indicator: "major",
+		}}
 
 		checker := GithubChecker{}
 		buffer := new(bytes.Buffer)
@@ -40,6 +37,6 @@ func TestGithubProbe(t *testing.T) {
 
 		err = checker.Check(buffer)
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldEqual, "Github is probably down")
+		So(err.Error(), ShouldEqual, "GitHub is probably down")
 	})
 }

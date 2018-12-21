@@ -20,18 +20,18 @@ func (_ GithubChecker) Check(body io.Reader) error {
 
 	err := json.NewDecoder(body).Decode(&result)
 	if err != nil {
-		return errgo.Notef(err, "Invalid json")
+		return errgo.Notef(err, "invalid json")
 	}
 
-	if result.Status == "major" {
-		return errgo.Newf("Github is probably down")
+	if result.Status.Indicator != "none" {
+		return errgo.Newf("GitHub is probably down")
 	}
 	return nil
 }
 
 func NewGithubProbe(name string) GithubProbe {
 	return GithubProbe{
-		http: httpprobe.NewHTTPProbe(name, "https://status.github.com/api/status.json", httpprobe.HTTPOptions{
+		http: httpprobe.NewHTTPProbe(name, "https://www.githubstatus.com/api/v2/status.json", httpprobe.HTTPOptions{
 			Checker: GithubChecker{},
 		}),
 	}
