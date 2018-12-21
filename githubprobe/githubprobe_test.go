@@ -27,7 +27,7 @@ func TestGithubProbe(t *testing.T) {
 
 	Convey("When GitHub respond not healthy", t, func() {
 		response := GithubStatusResponse{Status: GithubStatusResponseStatus{
-			Indicator: "mahor",
+			Indicator: "major",
 		}}
 
 		checker := GithubChecker{}
@@ -37,6 +37,6 @@ func TestGithubProbe(t *testing.T) {
 
 		err = checker.Check(buffer)
 		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldEqual, "Github is probably down")
+		So(err.Error(), ShouldEqual, "GitHub is probably down")
 	})
 }
