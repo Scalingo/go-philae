@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.2.0
+
+* Use new github status API
+* Fix mongo initializer when there are query parameters
+
 ## v4.1.0
 
 * Add `genericprobe` for Pinger (Ping() error)
