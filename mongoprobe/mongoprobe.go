@@ -6,6 +6,7 @@ import (
 	"net"
 	"net/url"
 	"strings"
+	"time"
 
 	errgo "gopkg.in/errgo.v1"
 	mgo "gopkg.in/mgo.v2"
@@ -46,17 +47,29 @@ func (p MongoProbe) buildSession(rawURL string) (*mgo.Session, error) {
 	if err != nil {
 		return nil, errors.New("not a valid URL")
 	}
-
 	withTLS := false
 	if u.Query().Get("ssl") == "true" {
 		withTLS = true
-		rawURL = strings.Replace(rawURL, "?ssl=true", "", 1)
+		rawURL = strings.Replace(rawURL, "?ssl=true", "?", 1)
 		rawURL = strings.Replace(rawURL, "&ssl=true", "", 1)
 	}
+
+	timeout := 10 * time.Second
+	queryTimeout := u.Query().Get("timeout")
+	if queryTimeout != "" {
+		timeout, err = time.ParseDuration(queryTimeout)
+		if err != nil {
+			return nil, errors.New("invalid duration in timeout parameter")
+		}
+		rawURL = strings.Replace(rawURL, "?timeout="+queryTimeout, "?", 1)
+		rawURL = strings.Replace(rawURL, "&timeout="+queryTimeout, "", 1)
+	}
+
 	info, err := mgo.ParseURL(rawURL)
 	if err != nil {
 		return nil, err
 	}
+	info.Timeout = timeout
 	if withTLS {
 		tlsConfig := &tls.Config{}
 		tlsConfig.InsecureSkipVerify = true
