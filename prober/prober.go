@@ -2,8 +2,6 @@ package prober
 
 import (
 	"context"
-	"errors"
-	"time"
 
 	"github.com/Scalingo/go-utils/logger"
 )
@@ -66,22 +64,10 @@ func (p *Prober) Check(ctx context.Context) *Result {
 
 func (p *Prober) CheckOneProbe(ctx context.Context, probe Probe, res chan *ProbeResult) {
 	log := logger.Get(ctx)
-	probeRes := make(chan error)
-	var err error
-
-	timer := time.NewTimer(2 * time.Second)
-
-	go ProberWrapper(probe, probeRes)
-
-	select {
-	case e := <-probeRes:
-		err = e
-	case <-timer.C:
-		err = errors.New("Probe timeout")
-	}
-
 	probe_healthy := true
 	comment := ""
+
+	err := probe.Check()
 	if err != nil {
 		comment = err.Error()
 		probe_healthy = false
@@ -94,9 +80,4 @@ func (p *Prober) CheckOneProbe(ctx context.Context, probe Probe, res chan *Probe
 	}
 
 	res <- probeResult
-}
-
-func ProberWrapper(probe Probe, res chan error) {
-	err := probe.Check()
-	res <- err
 }
