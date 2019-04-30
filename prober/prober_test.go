@@ -20,6 +20,7 @@ func TestProber(t *testing.T) {
 		res := p.Check(ctx)
 
 		So(res.Healthy, ShouldBeTrue)
+		So(res.Error, ShouldBeNil)
 		So(len(res.Probes), ShouldEqual, 2)
 		So(validateProbe(res.Probes, "a", true), ShouldBeNil)
 		So(validateProbe(res.Probes, "b", true), ShouldBeNil)
@@ -28,10 +29,15 @@ func TestProber(t *testing.T) {
 	Convey("With unhealthy probes", t, func() {
 		p := NewProber()
 		p.AddProbe(sampleprobe.NewSampleProbe("a", false))
-		p.AddProbe(sampleprobe.NewSampleProbe("b", false))
+		// Postpone the failure of the second probe to ensure the order of errors
+		p.AddProbe(sampleprobe.NewTimedSampleProbe("b", false, 10*time.Millisecond))
 
 		res := p.Check(ctx)
 
+		So(
+			res.Error.Error(), ShouldEqual,
+			"prober error: probe a: probe check failed: error, probe b: probe check failed: error",
+		)
 		So(res.Healthy, ShouldBeFalse)
 		So(len(res.Probes), ShouldEqual, 2)
 		So(validateProbe(res.Probes, "a", false), ShouldBeNil)
@@ -46,6 +52,7 @@ func TestProber(t *testing.T) {
 		res := p.Check(ctx)
 
 		So(res.Healthy, ShouldBeFalse)
+		So(res.Error.Error(), ShouldEqual, "prober error: probe b: probe check failed: error")
 		So(len(res.Probes), ShouldEqual, 2)
 		So(validateProbe(res.Probes, "a", true), ShouldBeNil)
 		So(validateProbe(res.Probes, "b", false), ShouldBeNil)
@@ -62,12 +69,14 @@ func TestProber(t *testing.T) {
 		So(duration, ShouldBeLessThan, 250*time.Millisecond)
 
 		So(res.Healthy, ShouldBeFalse)
+		So(res.Error.Error(), ShouldEqual, "prober error: probe test2: probe check failed: prober: context deadline exceeded")
 		So(len(res.Probes), ShouldEqual, 2)
 		So(res.Probes[0].Comment, ShouldStartWith, "took ")
 		So(res.Probes[0].Comment, ShouldEndWith, "ms")
 		So(res.Probes[0].Duration, ShouldBeBetween, 100*time.Millisecond, 101*time.Millisecond)
 		So(res.Probes[0].Healthy, ShouldBeTrue)
-		So(res.Probes[1].Comment, ShouldEqual, "prober: context deadline exceeded")
+		So(res.Probes[1].Comment, ShouldEqual, "error")
+		So(res.Probes[1].Error.Error(), ShouldEqual, "probe check failed: prober: context deadline exceeded")
 		So(res.Probes[1].Duration, ShouldBeBetween, 200*time.Millisecond, 201*time.Millisecond)
 		So(res.Probes[1].Healthy, ShouldBeFalse)
 	})
