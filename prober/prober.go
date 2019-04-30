@@ -76,7 +76,7 @@ type ProbeResult struct {
 // NewProber is the default constructor of a Prober
 func NewProber(opts ...ProberOption) *Prober {
 	p := &Prober{
-		timeout: 30 * time.Second,
+		timeout: 10 * time.Second,
 	}
 	for _, opt := range opts {
 		opt(p)
