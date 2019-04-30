@@ -63,9 +63,12 @@ func TestProber(t *testing.T) {
 
 		So(res.Healthy, ShouldBeFalse)
 		So(len(res.Probes), ShouldEqual, 2)
-		So(res.Probes[0].Comment, ShouldEqual, "")
+		So(res.Probes[0].Comment, ShouldStartWith, "took ")
+		So(res.Probes[0].Comment, ShouldEndWith, "ms")
+		So(res.Probes[0].Duration, ShouldBeBetween, 100*time.Millisecond, 101*time.Millisecond)
 		So(res.Probes[0].Healthy, ShouldBeTrue)
 		So(res.Probes[1].Comment, ShouldEqual, "prober: context deadline exceeded")
+		So(res.Probes[1].Duration, ShouldBeBetween, 200*time.Millisecond, 201*time.Millisecond)
 		So(res.Probes[1].Healthy, ShouldBeFalse)
 	})
 }

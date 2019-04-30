@@ -41,9 +41,10 @@ type Result struct {
 
 // ProbeResult is the data structure used to retain the data fetched from a single probe
 type ProbeResult struct {
-	Name    string `json:"name"`
-	Healthy bool   `json:"healthy"`
-	Comment string `json:"comment"`
+	Name     string        `json:"name"`
+	Healthy  bool          `json:"healthy"`
+	Comment  string        `json:"comment"`
+	Duration time.Duration `json:"duration"`
 }
 
 // NewProber is the default constructor of a Prober
@@ -93,6 +94,7 @@ func (p *Prober) CheckOneProbe(ctx context.Context, probe Probe, res chan *Probe
 	probeRes := make(chan error)
 	var err error
 
+	begin := time.Now()
 	go ProberWrapper(probe, probeRes)
 
 	select {
@@ -103,16 +105,18 @@ func (p *Prober) CheckOneProbe(ctx context.Context, probe Probe, res chan *Probe
 	}
 
 	probe_healthy := true
-	comment := ""
+	duration := time.Now().Sub(begin)
+	comment := fmt.Sprintf("took %v", duration)
 	if err != nil {
 		comment = err.Error()
 		probe_healthy = false
 		log.Infof("[PHILAE] Probe %s failed, reason: %s\n", probe.Name(), err.Error())
 	}
 	probeResult := &ProbeResult{
-		Name:    probe.Name(),
-		Healthy: probe_healthy,
-		Comment: comment,
+		Name:     probe.Name(),
+		Healthy:  probe_healthy,
+		Comment:  comment,
+		Duration: duration,
 	}
 
 	res <- probeResult
