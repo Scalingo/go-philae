@@ -1,5 +1,11 @@
 # Changelog
 
+## v4.3.0
+
+* Update Prober to return a correct Error in Prober.Result.Error
+* Update Prober to have a default higher timeout (10 seconds) and use context
+* TCP probe is now resolving DNS first
+
 ## v4.2.0
 
 * Use new github status API
