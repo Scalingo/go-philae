@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.3.1
+
+* Hotfix, nil value type is still the type
+* Add go.mod/go.sum for go modules
+
 ## v4.3.0
 
 * Update Prober to return a correct Error in Prober.Result.Error
