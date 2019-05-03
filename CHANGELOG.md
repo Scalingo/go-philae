@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.3.2
+
+* Add License to open-source project
+* Ditch GoConvey for better go 1.12 compat
+
 ## v4.3.1
 
 * Hotfix, nil value type is still the type
