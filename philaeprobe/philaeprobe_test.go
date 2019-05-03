@@ -8,38 +8,39 @@ import (
 	"testing"
 
 	"github.com/Scalingo/go-philae/prober"
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestPhilaeProbe(t *testing.T) {
-	Convey("With a unaivalable server", t, func() {
+	t.Run("With a unaivalable server", func(t *testing.T) {
 		p := NewPhilaeProbe("http", "http://localhost:6666", 0, 0)
 		err := p.Check()
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldStartWith, "Unable to send request")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "Unable to send request")
 	})
 
-	Convey("With a server responding 5XX", t, func() {
+	t.Run("With a server responding 5XX", func(t *testing.T) {
 		ts := launchTestServer(500, "Error")
 		defer ts.Close()
 
 		p := NewPhilaeProbe("http", ts.URL, 0, 0)
 		err := p.Check()
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldStartWith, "Invalid return code")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "Invalid return code")
 	})
 
-	Convey("With a server responding 2XX but an invalid json", t, func() {
+	t.Run("With a server responding 2XX but an invalid json", func(t *testing.T) {
 		ts := launchTestServer(200, "Salut salut")
 		defer ts.Close()
 
 		p := NewPhilaeProbe("http", ts.URL, 0, 0)
 		err := p.Check()
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldStartWith, "Invalid json")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "Invalid json")
 	})
 
-	Convey("With a server responding 2XX but an unhealthy probe", t, func() {
+	t.Run("With a server responding 2XX but an unhealthy probe", func(t *testing.T) {
 		result := &prober.Result{
 			Healthy: false,
 			Probes: []*prober.ProbeResult{
@@ -55,11 +56,11 @@ func TestPhilaeProbe(t *testing.T) {
 
 		p := NewPhilaeProbe("http", ts.URL, 0, 0)
 		err := p.Check()
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldEqual, "node-1 is down (pas bien),")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "node-1 is down (pas bien),")
 	})
 
-	Convey("With a server responding 2XX and an healthy probe", t, func() {
+	t.Run("With a server responding 2XX and an healthy probe", func(t *testing.T) {
 		result := &prober.Result{
 			Healthy: true,
 			Probes:  []*prober.ProbeResult{},
@@ -68,7 +69,7 @@ func TestPhilaeProbe(t *testing.T) {
 		defer ts.Close()
 
 		p := NewPhilaeProbe("http", ts.URL, 0, 0)
-		So(p.Check(), ShouldBeNil)
+		assert.NoError(t, p.Check())
 	})
 }
 

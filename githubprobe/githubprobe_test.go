@@ -5,11 +5,12 @@ import (
 	"encoding/json"
 	"testing"
 
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGithubProbe(t *testing.T) {
-	Convey("When GitHub respond healthy", t, func() {
+	t.Run("When GitHub respond healthy", func(t *testing.T) {
 		response := GithubStatusResponse{Status: GithubStatusResponseStatus{
 			Indicator: "none",
 		}}
@@ -19,13 +20,13 @@ func TestGithubProbe(t *testing.T) {
 		buffer := new(bytes.Buffer)
 
 		err := json.NewEncoder(buffer).Encode(&response)
-		So(err, ShouldBeNil)
+		assert.NoError(t, err)
 
 		err = checker.Check(buffer)
-		So(err, ShouldBeNil)
+		assert.NoError(t, err)
 	})
 
-	Convey("When GitHub respond not healthy", t, func() {
+	t.Run("When GitHub respond not healthy", func(t *testing.T) {
 		response := GithubStatusResponse{Status: GithubStatusResponseStatus{
 			Indicator: "major",
 		}}
@@ -33,10 +34,10 @@ func TestGithubProbe(t *testing.T) {
 		checker := GithubChecker{}
 		buffer := new(bytes.Buffer)
 		err := json.NewEncoder(buffer).Encode(&response)
-		So(err, ShouldBeNil)
+		assert.NoError(t, err)
 
 		err = checker.Check(buffer)
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldEqual, "GitHub is probably down")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "GitHub is probably down")
 	})
 }
