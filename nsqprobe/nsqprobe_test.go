@@ -6,8 +6,7 @@ import (
 	"testing"
 
 	"github.com/goware/httpmock"
-
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestNSQProbe(t *testing.T) {
@@ -43,14 +42,14 @@ func TestNSQProbe(t *testing.T) {
 		},
 	})
 
-	Convey("With a working server", t, func() {
+	t.Run("With a working server", func(t *testing.T) {
 		probe := NewNSQProbe("salut", "127.0.0.1", 10001, nil)
-		So(probe.Check(), ShouldBeNil)
+		assert.NoError(t, probe.Check())
 	})
 
-	Convey("With a non-working server", t, func() {
+	t.Run("With a non-working server", func(t *testing.T) {
 		probe := NewNSQProbe("salut", "127.0.0.1", 10000, nil)
-		So(probe.Check(), ShouldNotBeNil)
+		assert.Error(t, probe.Check())
 	})
 
 }

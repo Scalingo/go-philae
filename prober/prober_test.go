@@ -3,30 +3,32 @@ package prober
 import (
 	"context"
 	"errors"
+	"strings"
 	"testing"
 	"time"
 
 	"github.com/Scalingo/go-philae/sampleprobe"
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestProber(t *testing.T) {
 	ctx := context.Background()
-	Convey("With healthy probes", t, func() {
+	t.Run("With healthy probes", func(t *testing.T) {
 		p := NewProber()
 		p.AddProbe(sampleprobe.NewSampleProbe("a", true))
 		p.AddProbe(sampleprobe.NewSampleProbe("b", true))
 
 		res := p.Check(ctx)
 
-		So(res.Healthy, ShouldBeTrue)
-		So(res.Error, ShouldBeNil)
-		So(len(res.Probes), ShouldEqual, 2)
-		So(validateProbe(res.Probes, "a", true), ShouldBeNil)
-		So(validateProbe(res.Probes, "b", true), ShouldBeNil)
+		assert.True(t, res.Healthy)
+		assert.NoError(t, res.Error)
+		assert.True(t, res.Error == nil)
+		assert.Len(t, res.Probes, 2)
+		assert.NoError(t, validateProbe(t, res.Probes, "a", true))
+		assert.NoError(t, validateProbe(t, res.Probes, "b", true))
 	})
 
-	Convey("With unhealthy probes", t, func() {
+	t.Run("With unhealthy probes", func(t *testing.T) {
 		p := NewProber()
 		p.AddProbe(sampleprobe.NewSampleProbe("a", false))
 		// Postpone the failure of the second probe to ensure the order of errors
@@ -34,31 +36,31 @@ func TestProber(t *testing.T) {
 
 		res := p.Check(ctx)
 
-		So(
-			res.Error.Error(), ShouldEqual,
+		assert.Equal(t,
 			"prober error: probe a: probe check failed: error, probe b: probe check failed: error",
+			res.Error.Error(),
 		)
-		So(res.Healthy, ShouldBeFalse)
-		So(len(res.Probes), ShouldEqual, 2)
-		So(validateProbe(res.Probes, "a", false), ShouldBeNil)
-		So(validateProbe(res.Probes, "b", false), ShouldBeNil)
+		assert.False(t, res.Healthy)
+		assert.Len(t, res.Probes, 2)
+		assert.NoError(t, validateProbe(t, res.Probes, "a", false))
+		assert.NoError(t, validateProbe(t, res.Probes, "b", false))
 	})
 
-	Convey("With a healthy probe and a unhealthy probe", t, func() {
+	t.Run("With a healthy probe and a unhealthy probe", func(t *testing.T) {
 		p := NewProber()
 		p.AddProbe(sampleprobe.NewSampleProbe("a", true))
 		p.AddProbe(sampleprobe.NewSampleProbe("b", false))
 
 		res := p.Check(ctx)
 
-		So(res.Healthy, ShouldBeFalse)
-		So(res.Error.Error(), ShouldEqual, "prober error: probe b: probe check failed: error")
-		So(len(res.Probes), ShouldEqual, 2)
-		So(validateProbe(res.Probes, "a", true), ShouldBeNil)
-		So(validateProbe(res.Probes, "b", false), ShouldBeNil)
+		assert.False(t, res.Healthy)
+		assert.Equal(t, res.Error.Error(), "prober error: probe b: probe check failed: error")
+		assert.Len(t, res.Probes, 2)
+		assert.NoError(t, validateProbe(t, res.Probes, "a", true))
+		assert.NoError(t, validateProbe(t, res.Probes, "b", false))
 	})
 
-	Convey("With a probe that times out", t, func() {
+	t.Run("With a probe that times out", func(t *testing.T) {
 		p := NewProber(WithTimeout(200 * time.Millisecond))
 		p.AddProbe(sampleprobe.NewTimedSampleProbe("test1", true, 100*time.Millisecond))
 		p.AddProbe(sampleprobe.NewTimedSampleProbe("test2", true, 300*time.Millisecond))
@@ -66,26 +68,29 @@ func TestProber(t *testing.T) {
 		res := p.Check(ctx)
 		duration := time.Now().Sub(start)
 
-		So(duration, ShouldBeLessThan, 250*time.Millisecond)
+		assert.True(t, duration < 205*time.Millisecond)
+		assert.True(t, duration > 200*time.Millisecond)
 
-		So(res.Healthy, ShouldBeFalse)
-		So(res.Error.Error(), ShouldEqual, "prober error: probe test2: probe check failed: prober: context deadline exceeded")
-		So(len(res.Probes), ShouldEqual, 2)
-		So(res.Probes[0].Comment, ShouldStartWith, "took ")
-		So(res.Probes[0].Comment, ShouldEndWith, "ms")
-		So(res.Probes[0].Duration, ShouldBeBetween, 100*time.Millisecond, 102*time.Millisecond)
-		So(res.Probes[0].Healthy, ShouldBeTrue)
-		So(res.Probes[1].Comment, ShouldEqual, "error")
-		So(res.Probes[1].Error.Error(), ShouldEqual, "probe check failed: prober: context deadline exceeded")
-		So(res.Probes[1].Duration, ShouldBeBetween, 200*time.Millisecond, 202*time.Millisecond)
-		So(res.Probes[1].Healthy, ShouldBeFalse)
+		assert.False(t, res.Healthy)
+		assert.Equal(t, res.Error.Error(), "prober error: probe test2: probe check failed: prober: context deadline exceeded")
+		assert.Len(t, res.Probes, 2)
+		assert.True(t, strings.HasPrefix(res.Probes[0].Comment, "took "))
+		assert.True(t, strings.HasSuffix(res.Probes[0].Comment, "ms"))
+		assert.True(t, res.Probes[0].Duration < 105*time.Millisecond)
+		assert.True(t, res.Probes[0].Duration > 100*time.Millisecond)
+		assert.True(t, res.Probes[0].Healthy)
+		assert.Equal(t, res.Probes[1].Comment, "error")
+		assert.Equal(t, res.Probes[1].Error.Error(), "probe check failed: prober: context deadline exceeded")
+		assert.True(t, res.Probes[1].Duration < 205*time.Millisecond)
+		assert.True(t, res.Probes[1].Duration > 200*time.Millisecond)
+		assert.False(t, res.Probes[1].Healthy)
 	})
 }
 
-func validateProbe(probes []*ProbeResult, name string, healthy bool) error {
+func validateProbe(t *testing.T, probes []*ProbeResult, name string, healthy bool) error {
 	for _, probe := range probes {
 		if probe.Name == name {
-			So(probe.Healthy, ShouldEqual, healthy)
+			assert.Equal(t, probe.Healthy, healthy)
 			return nil
 		}
 	}

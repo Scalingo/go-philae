@@ -6,7 +6,8 @@ import (
 	"testing"
 
 	"github.com/goware/httpmock"
-	. "github.com/smartystreets/goconvey/convey"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDockerProbe(t *testing.T) {
@@ -47,16 +48,16 @@ func TestDockerProbe(t *testing.T) {
 		},
 	})
 
-	Convey("With a working docker container", t, func() {
+	t.Run("With a working docker container", func(t *testing.T) {
 		probe := NewDockerProbe("docker", "127.0.0.1:11000")
 		err := probe.Check()
 
-		So(err, ShouldBeNil)
+		assert.NoError(t, err)
 	})
-	Convey("With a not working docker container", t, func() {
+	t.Run("With a not working docker container", func(t *testing.T) {
 		probe := NewDockerProbe("docker", "127.0.0.1:11001")
 		err := probe.Check()
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldEqual, "Unable to contact docker: API error (500): it's not alive!")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "Unable to contact docker: API error (500): it's not alive!")
 	})
 }

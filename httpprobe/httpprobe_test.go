@@ -4,82 +4,93 @@ import (
 	"errors"
 	"testing"
 
-	httpmock "gopkg.in/jarcoal/httpmock.v1"
-
-	. "github.com/smartystreets/goconvey/convey"
+	httpmock "github.com/jarcoal/httpmock"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestHttpProbe(t *testing.T) {
-	Convey("With a unaivalable server", t, func() {
+	t.Run("With a unavailable server", func(t *testing.T) {
 		p := NewHTTPProbe("http", "http://localhost:6666", HTTPOptions{testing: true})
 		err := p.Check()
-		So(err, ShouldNotBeNil)
-		So(err.Error(), ShouldStartWith, "Unable to send request")
+		require.Error(t, err)
+		assert.Contains(t, err.Error(), "Unable to send request")
 	})
 
-	Convey("With a server responding 5XX", t, func() {
-		httpmock.Activate()
-		defer httpmock.DeactivateAndReset()
-		httpmock.RegisterResponder("GET", "http://scalingo.com/",
-			httpmock.NewStringResponder(500, `Error`))
+	t.Run("With a server responding 5XX", func(t *testing.T) {
+		cases := map[string]struct {
+			status int
+			err    string
+		}{
+			"With a normal node, it should refuse this node": {
+				err: "Invalid return code",
+			},
+			"With a node accepting 500 responses, it should accept this node": {
+				status: 500,
+			},
+			"With a node accepting 400 responses, it should not accept this node": {
+				status: 400,
+				err:    "Unexpected status code: 500 (expected: 400)",
+			},
+		}
 
-		Convey("With a normal node, it should refuse this node", func() {
-			p := NewHTTPProbe("http", "http://scalingo.com/", HTTPOptions{testing: true})
+		for title, c := range cases {
+			t.Run(title, func(t *testing.T) {
+				httpmock.Activate()
+				defer httpmock.DeactivateAndReset()
+				httpmock.RegisterResponder("GET", "http://scalingo.com/",
+					httpmock.NewStringResponder(500, `Error`))
 
-			err := p.Check()
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldStartWith, "Invalid return code")
-		})
-
-		Convey("With a node accepting 500 responses, it should accept this node", func() {
-			p := NewHTTPProbe("http", "http://scalingo.com/", HTTPOptions{
-				testing:            true,
-				ExpectedStatusCode: 500,
-			})
-			err := p.Check()
-			So(err, ShouldBeNil)
-		})
-
-		Convey("With a node accepting 400 responses, it should not accept this node", func() {
-			p := NewHTTPProbe("http", "http://scalingo.com/", HTTPOptions{
-				testing:            true,
-				ExpectedStatusCode: 400,
-			})
-			err := p.Check()
-			So(err, ShouldNotBeNil)
-			So(err.Error(), ShouldEqual, "Unexpected status code: 500 (expected: 400)")
-		})
-
-	})
-	Convey("With a server responding 2XX", t, func() {
-		httpmock.Activate()
-		defer httpmock.DeactivateAndReset()
-		httpmock.RegisterResponder("GET", "http://scalingo.com/",
-			httpmock.NewStringResponder(200, `Error`))
-
-		Convey("With a vanilla probe", func() {
-			p := NewHTTPProbe("http", "http://scalingo.com/", HTTPOptions{testing: true})
-			So(p.Check(), ShouldBeNil)
-		})
-		Convey("With a probe with a custom checker", func() {
-			Convey("With a success checker", func() {
 				p := NewHTTPProbe("http", "http://scalingo.com/", HTTPOptions{
-					testing: true,
-					Checker: newTestChecker(nil),
-				})
-				So(p.Check(), ShouldBeNil)
-			})
-
-			Convey("With a failing checker", func() {
-				p := NewHTTPProbe("http", "http://scalingo.com/", HTTPOptions{
-					testing: true,
-					Checker: newTestChecker(errors.New("test error")),
+					testing:            true,
+					ExpectedStatusCode: c.status,
 				})
 				err := p.Check()
-
-				So(err, ShouldNotBeNil)
-				So(err.Error(), ShouldEqual, "test error")
+				if c.err != "" {
+					require.Error(t, err)
+					assert.Contains(t, err.Error(), c.err)
+					return
+				}
+				assert.NoError(t, err)
 			})
-		})
+		}
+	})
+
+	t.Run("With a server responding 2XX", func(t *testing.T) {
+		cases := map[string]struct {
+			checker HTTPChecker
+			err     string
+		}{
+			"With a vanilla probe": {},
+			"With a probe with custom successful checker": {
+				checker: newTestChecker(nil),
+			},
+			"With a probe with custom failing checker": {
+				checker: newTestChecker(errors.New("test error")),
+				err:     "test error",
+			},
+		}
+
+		for title, c := range cases {
+			t.Run(title, func(t *testing.T) {
+				httpmock.Activate()
+				defer httpmock.DeactivateAndReset()
+				httpmock.RegisterResponder("GET", "http://scalingo.com/",
+					httpmock.NewStringResponder(200, `Error`))
+
+				p := NewHTTPProbe("http", "http://scalingo.com/", HTTPOptions{
+					testing: true,
+					Checker: c.checker,
+				})
+
+				err := p.Check()
+				if c.err == "" {
+					require.NoError(t, err)
+					return
+				}
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), c.err)
+			})
+		}
 	})
 }
