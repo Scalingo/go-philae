@@ -17,7 +17,7 @@ func TestGitlabProbe(t *testing.T) {
 			Overall: &statusioprobe.StatusIOOverallResult{StatusCode: 100},
 		}}
 
-		checker := GitlabChecker{}
+		checker := statusioprobe.StatusIOChecker{}
 
 		buffer := new(bytes.Buffer)
 
@@ -33,13 +33,13 @@ func TestGitlabProbe(t *testing.T) {
 			Overall: &statusioprobe.StatusIOOverallResult{StatusCode: 400},
 		}}
 
-		checker := GitlabChecker{}
+		checker := statusioprobe.StatusIOChecker{}
 		buffer := new(bytes.Buffer)
 		err := json.NewEncoder(buffer).Encode(&response)
 		assert.NoError(t, err)
 
 		err = checker.Check(buffer)
 		require.Error(t, err)
-		assert.Contains(t, err.Error(), "One or more services from GitLab are down!")
+		assert.Contains(t, err.Error(), "Incident reported!")
 	})
 }
