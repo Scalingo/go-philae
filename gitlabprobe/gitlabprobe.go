@@ -14,7 +14,7 @@ type GitlabProbe struct {
 	http httpprobe.HTTPProbe
 }
 
-type GitlabChecker struct {}
+type GitlabChecker struct{}
 
 func NewGitlabProbe(name string) GitlabProbe {
 	return GitlabProbe{
@@ -42,7 +42,7 @@ func (GitlabChecker) Check(body io.Reader) error {
 	}
 
 	if result.Result.Overall.StatusCode >= 400 {
-		return errgo.Newf("Incident reported!")
+		return errgo.Newf("One or more services from GitLab are down!")
 	}
 
 	return nil
