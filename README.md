@@ -88,6 +88,19 @@ githubprobe.NewGithubProbe(name string)
 
 * name: The name of the probe
 
+### GitlabProbe
+
+Check that GitLab isn't reporting any issue.
+It use the official GitLab Status (StatusIO page) to check if there no "major" problem with the GitLab infrastructure.
+
+#### Usage
+
+```
+gitlabprobe.NewGitLabProbe(name string)
+```
+
+* name: The name of the probe
+
 ### HTTPProbe
 
 Check that an HTTP service is running fine.
