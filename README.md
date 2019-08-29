@@ -113,7 +113,7 @@ httpprobe.NewHTTPProbe(name, endpoint sring, opts HTTPOptions)
 ```
 
 * name: The name of the probe
-* endpoint: Endpoint which should be checked (i.e.: http://google.com)
+* endpoint: Endpoint which should be checked (e.g.: http://google.com)
 * opts: General Options
 
 HTTPOptions params:
@@ -163,7 +163,7 @@ philaeprobe.NewPhilaeProbe(name, endpoint string, dialTimeout, responseTimeout i
 ```
 
 * name: The name of the probe
-* endpoint: The philae endpoint (i.e.: "http://test.dev/_health")
+* endpoint: The philae endpoint (e.g.: "http://example.com/_health")
 * dialTimeout, responseTimeout: see HTTPProbe
 
 ### RedisProbe
@@ -186,7 +186,29 @@ redisprobe.NewRedisProbeFromURL(name, url string)
 ```
 
 * name: The name of the probe
-* url: The url of the Redis server (i.e.: "redis://:password@server.org")
+* url: The url of the Redis server (e.g.: "redis://:password@example.com")
+
+### PostgreSQLProbe
+
+Check that a PostgreSQL server is up and running
+
+#### Usage
+
+```
+pgsqlprobe.NewPostgreSQLProbe(name, host, password) string
+```
+
+* name: The name of the probe
+* host: The PostgreSQL host
+* password: The password needed to access the database
+
+
+```
+pgsqlprobe.NewPostgreSQLProbeFromURL(name, url string)
+```
+
+* name: The name of the probe
+* url: The URL of the Redis server (e.g.: `postgres://username:password@example.com`)
 
 ### SampleProbe
 

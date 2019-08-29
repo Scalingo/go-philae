@@ -45,9 +45,8 @@ func (p RedisProbe) Check() error {
 	defer client.Close()
 
 	_, err := client.Ping().Result()
-
 	if err != nil {
-		return errgo.Notef(err, "Unable to contact host")
+		return errgo.Notef(err, "unable to contact Redis host")
 	}
 
 	return nil
