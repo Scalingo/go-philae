@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.3.3
+
+* Add PostgreSQL probe
+
 ## v4.3.2
 
 * Add License to open-source project
