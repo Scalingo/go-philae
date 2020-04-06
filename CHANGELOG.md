@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.4.0
+
+* [swiftprobe] Make it compatible with API v3 of Openstack Keystone
+
 ## v4.3.3
 
 * Add PostgreSQL probe
