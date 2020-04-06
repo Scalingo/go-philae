@@ -82,7 +82,7 @@ func TestProber(t *testing.T) {
 		assert.Equal(t, res.Probes[1].Comment, "error")
 		assert.Equal(t, res.Probes[1].Error.Error(), "probe check failed: prober: context deadline exceeded")
 		assert.True(t, res.Probes[1].Duration < 205*time.Millisecond)
-		assert.True(t, res.Probes[1].Duration > 200*time.Millisecond)
+		assert.True(t, res.Probes[1].Duration > 190*time.Millisecond)
 		assert.False(t, res.Probes[1].Healthy)
 	})
 }
