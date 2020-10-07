@@ -66,11 +66,12 @@ type Result struct {
 
 // ProbeResult is the data structure used to retain the data fetched from a single probe
 type ProbeResult struct {
-	Name     string        `json:"name"`
-	Healthy  bool          `json:"healthy"`
-	Comment  string        `json:"comment"`
-	Error    error         `json:"error"`
-	Duration time.Duration `json:"duration"`
+	Name         string        `json:"name"`
+	Healthy      bool          `json:"healthy"`
+	Comment      string        `json:"comment"`
+	Error        error         `json:"-"`
+	ErrorMessage string        `json:"error"`
+	Duration     time.Duration `json:"duration"`
 }
 
 // NewProber is the default constructor of a Prober
@@ -151,6 +152,9 @@ func (p *Prober) CheckOneProbe(ctx context.Context, probe Probe, res chan *Probe
 		Comment:  comment,
 		Error:    err,
 		Duration: duration,
+	}
+	if err != nil {
+		probeResult.ErrorMessage = err.Error()
 	}
 
 	res <- probeResult
