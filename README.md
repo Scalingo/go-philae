@@ -12,6 +12,12 @@ Finally, the handler is a small utility that will take a prober and an existing 
 
 ## Usage
 
+Import:
+
+```
+github.com/Scalingo/go-philae/v4
+```
+
 To use it in an existing project, you will need to add a prober with some probes, pass it to the handler and generate the route.
 
 ```

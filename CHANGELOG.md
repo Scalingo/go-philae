@@ -1,5 +1,10 @@
 # Changelog
 
+## v4.4.1
+
+* Dependencies: stop using global github.com/Scalingo/go-utils module, use submodule
+* Use /v4 suffix in module
+
 ## v4.4.0
 
 * [swiftprobe] Make it compatible with API v3 of Openstack Keystone
