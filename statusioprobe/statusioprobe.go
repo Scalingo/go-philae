@@ -6,7 +6,7 @@ import (
 
 	errgo "gopkg.in/errgo.v1"
 
-	"github.com/Scalingo/go-philae/httpprobe"
+	"github.com/Scalingo/go-philae/v4/httpprobe"
 )
 
 type StatusIOProbe struct {

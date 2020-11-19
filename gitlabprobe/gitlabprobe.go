@@ -1,7 +1,7 @@
 package gitlabprobe
 
 import (
-	"github.com/Scalingo/go-philae/statusioprobe"
+	"github.com/Scalingo/go-philae/v4/statusioprobe"
 )
 
 func NewGitlabProbe(name string) statusioprobe.StatusIOProbe {
