@@ -7,8 +7,8 @@ import (
 
 	errgo "gopkg.in/errgo.v1"
 
-	"github.com/Scalingo/go-philae/httpprobe"
-	"github.com/Scalingo/go-philae/prober"
+	"github.com/Scalingo/go-philae/v4/httpprobe"
+	"github.com/Scalingo/go-philae/v4/prober"
 )
 
 type PhilaeProbe struct {

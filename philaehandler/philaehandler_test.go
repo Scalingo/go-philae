@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Scalingo/go-philae/prober"
-	"github.com/Scalingo/go-philae/sampleprobe"
+	"github.com/Scalingo/go-philae/v4/prober"
+	"github.com/Scalingo/go-philae/v4/sampleprobe"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

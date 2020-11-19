@@ -7,7 +7,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Scalingo/go-philae/sampleprobe"
+	"github.com/Scalingo/go-philae/v4/sampleprobe"
 	"github.com/stretchr/testify/assert"
 )
 
