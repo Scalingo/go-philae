@@ -1,5 +1,9 @@
 # Changelog
 
+## v4.4.2
+
+* Stop using github.com/coreos/etcd, use instead go.etcd.io/etcd/v3
+
 ## v4.4.1
 
 * Dependencies: stop using global github.com/Scalingo/go-utils module, use submodule
