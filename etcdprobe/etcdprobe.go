@@ -3,7 +3,7 @@ package etcdprobe
 import (
 	"context"
 
-	etcd "github.com/coreos/etcd/client"
+	etcd "go.etcd.io/etcd/v3/client"
 	errgo "gopkg.in/errgo.v1"
 )
 

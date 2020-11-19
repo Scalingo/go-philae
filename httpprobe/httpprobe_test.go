@@ -2,9 +2,11 @@ package httpprobe
 
 import (
 	"errors"
+	"net/http"
+	"net/url"
 	"testing"
 
-	httpmock "github.com/jarcoal/httpmock"
+	"github.com/goware/httpmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -36,12 +38,23 @@ func TestHttpProbe(t *testing.T) {
 
 		for title, c := range cases {
 			t.Run(title, func(t *testing.T) {
-				httpmock.Activate()
-				defer httpmock.DeactivateAndReset()
-				httpmock.RegisterResponder("GET", "http://scalingo.com/",
-					httpmock.NewStringResponder(500, `Error`))
+				mockWorkingService := httpmock.NewMockHTTPServer("127.0.0.1:12345")
+				defer mockWorkingService.Listener.Close()
+				requestUrl, _ := url.Parse("http://127.0.0.1:12345/")
+				mockWorkingService.AddResponses([]httpmock.MockResponse{
+					{
+						Request: http.Request{
+							Method: "GET",
+							URL:    requestUrl,
+						},
+						Response: httpmock.Response{
+							StatusCode: 500,
+							Body:       "Error",
+						},
+					},
+				})
 
-				p := NewHTTPProbe("http", "http://scalingo.com/", HTTPOptions{
+				p := NewHTTPProbe("http", "http://127.0.0.1:12345/", HTTPOptions{
 					testing:            true,
 					ExpectedStatusCode: c.status,
 				})
@@ -73,12 +86,23 @@ func TestHttpProbe(t *testing.T) {
 
 		for title, c := range cases {
 			t.Run(title, func(t *testing.T) {
-				httpmock.Activate()
-				defer httpmock.DeactivateAndReset()
-				httpmock.RegisterResponder("GET", "http://scalingo.com/",
-					httpmock.NewStringResponder(200, `Error`))
+				mockWorkingService := httpmock.NewMockHTTPServer("127.0.0.1:12345")
+				defer mockWorkingService.Listener.Close()
+				requestUrl, _ := url.Parse("http://127.0.0.1:12345/")
+				mockWorkingService.AddResponses([]httpmock.MockResponse{
+					{
+						Request: http.Request{
+							Method: "GET",
+							URL:    requestUrl,
+						},
+						Response: httpmock.Response{
+							StatusCode: 200,
+							Body:       "OK",
+						},
+					},
+				})
 
-				p := NewHTTPProbe("http", "http://scalingo.com/", HTTPOptions{
+				p := NewHTTPProbe("http", "http://127.0.0.1:12345/", HTTPOptions{
 					testing: true,
 					Checker: c.checker,
 				})
