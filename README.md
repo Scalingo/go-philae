@@ -1,4 +1,6 @@
-# Go Philae
+# [DEPRECATED] Go Philae
+
+The Philae service is not deployed any more. Hence we consider this probe deprecated. It may be revived from the dead in a while. Remember to add it back to the list of [Scalingo repositories](https://github.com/Scalingo/tools-and-hacks/blob/master/scalingo-upgrader/repos.json) when you do so.
 
 Go Philae is the go implementation of our Philae health check protocol.
 
