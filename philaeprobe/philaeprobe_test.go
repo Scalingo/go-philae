@@ -7,9 +7,10 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Scalingo/go-philae/prober"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/Scalingo/go-philae/v4/prober"
 )
 
 func TestPhilaeProbe(t *testing.T) {
