@@ -11,7 +11,7 @@ require (
 	github.com/gorilla/websocket v1.4.0 // indirect
 	github.com/goware/httpmock v0.0.0-20150807175315-4fdb484c3e70
 	github.com/lib/pq v1.2.0
-	github.com/ncw/swift v1.0.50
+	github.com/ncw/swift v1.0.53
 	github.com/onsi/ginkgo v1.8.0 // indirect
 	github.com/onsi/gomega v1.5.0 // indirect
 	github.com/sirupsen/logrus v1.7.0
