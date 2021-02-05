@@ -7,7 +7,7 @@ require (
 	github.com/fsouza/go-dockerclient v1.4.0
 	github.com/garyburd/redigo v1.6.0 // indirect
 	github.com/golang/groupcache v0.0.0-20190129154638-5b532d6fd5ef // indirect
-	github.com/gorilla/mux v1.7.1
+	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.4.0 // indirect
 	github.com/goware/httpmock v0.0.0-20150807175315-4fdb484c3e70
 	github.com/lib/pq v1.2.0
