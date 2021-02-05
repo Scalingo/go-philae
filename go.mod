@@ -1,7 +1,8 @@
 module github.com/Scalingo/go-philae/v4
 
+go 1.15
+
 require (
-	github.com/Scalingo/go-philae v4.3.0+incompatible
 	github.com/Scalingo/go-utils/logger v1.0.0
 	github.com/coreos/go-semver v0.3.0 // indirect
 	github.com/fsouza/go-dockerclient v1.4.0
@@ -26,5 +27,3 @@ require (
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce
 	gopkg.in/redis.v4 v4.2.4
 )
-
-go 1.13
