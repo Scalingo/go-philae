@@ -1,5 +1,9 @@
 # Changelog
 
+## To Be Released
+
+* Various dependencies update following Dependabot activation
+
 ## v4.4.2
 
 * Stop using github.com/coreos/etcd, use instead go.etcd.io/etcd/v3
