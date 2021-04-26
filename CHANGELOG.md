@@ -4,6 +4,7 @@
 
 * Various dependencies update following Dependabot activation
 * Bump github.com/sirupsen/logrus from 1.7.0 to 1.8.1
+* Bump github.com/lib/pq from 1.10.0 to 1.10.1
 
 ## v4.4.2
 
