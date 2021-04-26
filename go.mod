@@ -8,7 +8,7 @@ require (
 	github.com/garyburd/redigo v1.6.2 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/goware/httpmock v0.0.0-20150807175315-4fdb484c3e70
-	github.com/lib/pq v1.10.0
+	github.com/lib/pq v1.10.1
 	github.com/ncw/swift v1.0.53
 	github.com/onsi/ginkgo v1.15.0 // indirect
 	github.com/onsi/gomega v1.10.5 // indirect
