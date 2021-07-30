@@ -6,6 +6,7 @@
 * Bump github.com/sirupsen/logrus from 1.7.0 to 1.8.1
 * Bump github.com/lib/pq from 1.10.0 to 1.10.2
 * Bump github.com/fsouza/go-dockerclient from 1.7.2 to 1.7.3
+* Bump go.etcd.io/etcd/client to 2.305.0 (Go modules version)
 
 ## v4.4.2
 
