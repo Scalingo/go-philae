@@ -3,8 +3,8 @@ package etcdprobe
 import (
 	"context"
 
-	etcd "go.etcd.io/etcd/v3/client"
-	errgo "gopkg.in/errgo.v1"
+	etcd "go.etcd.io/etcd/client/v2"
+	"gopkg.in/errgo.v1"
 )
 
 type EtcdProbe struct {
