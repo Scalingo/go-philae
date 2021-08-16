@@ -1,4 +1,4 @@
-# Go Philae v4.4.2
+# Go Philae v4.4.3
 
 Go Philae is the go implementation of our Philae health check protocol.
 
@@ -295,10 +295,10 @@ Commit, tag and create a new release:
 
 ```sh
 git add CHANGELOG.md README.md
-git commit -m "Bump v4.4.2"
-git tag v4.4.2
-git push origin master v4.4.2
-hub release create v4.4.2
+git commit -m "Bump v4.4.3"
+git tag v4.4.3
+git push origin master v4.4.3
+hub release create v4.4.3
 ```
 
 The title of the release should be the version number and the text of the
