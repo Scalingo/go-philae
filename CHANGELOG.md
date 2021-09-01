@@ -2,6 +2,8 @@
 
 ## To Be Released
 
+* Bump github.com/fsouza/go-dockerclient from 1.7.3 to 1.7.4
+
 ## v4.4.3
 
 * Various dependencies update following Dependabot activation
