@@ -14,7 +14,7 @@ require (
 	github.com/onsi/gomega v1.10.5 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0
-	go.etcd.io/etcd/client/v2 v2.305.0
+	go.etcd.io/etcd/client/v2 v2.305.1
 	gopkg.in/bsm/ratelimit.v1 v1.0.0-20160220154919-db14e161995a // indirect
 	gopkg.in/errgo.v1 v1.0.1
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
