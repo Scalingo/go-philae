@@ -4,6 +4,7 @@
 
 * Bump github.com/fsouza/go-dockerclient from 1.7.3 to 1.7.4
 * Bump go.etcd.io/etcd/client/v2 from 2.305.0 to 2.305.1
+* Bump github.com/Scalingo/go-utils/logger from 1.0.0 to 1.1.0
 
 ## v4.4.3
 
