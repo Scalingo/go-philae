@@ -3,6 +3,7 @@
 ## To Be Released
 
 * Bump github.com/fsouza/go-dockerclient from 1.7.3 to 1.7.4
+* Bump go.etcd.io/etcd/client/v2 from 2.305.0 to 2.305.1
 
 ## v4.4.3
 
