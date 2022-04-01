@@ -3,7 +3,7 @@
 ## To Be Released
 
 * Bump github.com/lib/pq from 1.10.3 to 1.10.4
-* Bump github.com/fsouza/go-dockerclient from 1.7.3 to 1.7.9
+* Bump github.com/fsouza/go-dockerclient from 1.7.3 to 1.7.10
 * Bump go.etcd.io/etcd/client/v2 from 2.305.0 to 2.305.1
 * Bump github.com/Scalingo/go-utils/logger from 1.0.0 to 1.1.0
 * chore(deps): bump github.com/stretchr/testify from 1.7.0 to 1.7.1
