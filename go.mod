@@ -13,7 +13,7 @@ require (
 	github.com/ncw/swift v1.0.53
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.1
-	go.etcd.io/etcd/client/v2 v2.305.2
+	go.etcd.io/etcd/client/v2 v2.305.4
 	gopkg.in/bsm/ratelimit.v1 v1.0.0-20160220154919-db14e161995a // indirect
 	gopkg.in/errgo.v1 v1.0.1
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
