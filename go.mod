@@ -9,7 +9,7 @@ require (
 	github.com/garyburd/redigo v1.6.2 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/goware/httpmock v0.0.0-20150807175315-4fdb484c3e70
-	github.com/lib/pq v1.10.5
+	github.com/lib/pq v1.10.6
 	github.com/ncw/swift v1.0.53
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.1
