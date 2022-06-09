@@ -2,6 +2,8 @@
 
 ## To Be Released
 
+## v4.4.4
+
 * chore(go): use go 1.17
 * Bump github.com/lib/pq from 1.10.3 to 1.10.6
 * Bump github.com/fsouza/go-dockerclient from 1.7.3 to 1.7.11
