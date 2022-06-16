@@ -296,9 +296,8 @@ Commit, tag and create a new release:
 ```sh
 git add CHANGELOG.md README.md
 git commit -m "Bump v4.4.4"
-git tag v4.4.4
-git push origin master v4.4.4
-hub release create v4.4.4
+git push origin master
+gh release create v4.4.4
 ```
 
 The title of the release should be the version number and the text of the
