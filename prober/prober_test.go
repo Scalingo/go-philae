@@ -7,8 +7,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/Scalingo/go-philae/v4/sampleprobe"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/Scalingo/go-philae/v4/sampleprobe"
 )
 
 func TestProber(t *testing.T) {
@@ -84,6 +85,32 @@ func TestProber(t *testing.T) {
 		assert.True(t, res.Probes[1].Duration < 205*time.Millisecond)
 		assert.True(t, res.Probes[1].Duration > 190*time.Millisecond)
 		assert.False(t, res.Probes[1].Healthy)
+	})
+
+	t.Run("With a single probe that times out", func(t *testing.T) {
+		p := NewProber(WithTimeout(200 * time.Millisecond))
+		p.AddProbe(sampleprobe.NewTimedSampleProbe("test", true, 300*time.Millisecond))
+
+		start := time.Now()
+		res := p.CheckOneProbe(ctx, "test")
+		duration := time.Since(start)
+
+		assert.True(t, duration > 200*time.Millisecond)
+		assert.False(t, res.Healthy)
+		assert.Equal(t, "test", res.Name)
+		assert.Equal(t, "error", res.Comment)
+		assert.Equal(t, "probe check failed: prober: context deadline exceeded", res.Error.Error())
+	})
+
+	t.Run("With a single healthy probe", func(t *testing.T) {
+		p := NewProber()
+		p.AddProbe(sampleprobe.NewSampleProbe("test", true))
+
+		res := p.CheckOneProbe(ctx, "test")
+
+		assert.Equal(t, "test", res.Name)
+		assert.True(t, res.Healthy)
+		assert.NoError(t, res.Error)
 	})
 }
 

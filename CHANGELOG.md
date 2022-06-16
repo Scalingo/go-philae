@@ -2,6 +2,8 @@
 
 ## To Be Released
 
+* feat(prober): change the exposed CheckOneProbe to make it usable outside of this package
+
 ## v4.4.4
 
 * chore(go): use go 1.17

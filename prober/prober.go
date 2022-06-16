@@ -99,7 +99,7 @@ func (p *Prober) Check(ctx context.Context) *Result {
 	defer cancel()
 
 	for _, probe := range p.probes {
-		go p.CheckOneProbe(ctx, probe, resultChan)
+		go p.checkOneProbe(ctx, probe, resultChan)
 	}
 
 	for i := 0; i < len(p.probes); i++ {
@@ -123,7 +123,21 @@ func (p *Prober) Check(ctx context.Context) *Result {
 	}
 }
 
-func (p *Prober) CheckOneProbe(ctx context.Context, probe Probe, res chan *ProbeResult) {
+func (p *Prober) CheckOneProbe(ctx context.Context, probeName string) *ProbeResult {
+	resultChan := make(chan *ProbeResult, 1)
+	ctx, cancel := context.WithTimeout(ctx, p.timeout)
+	defer cancel()
+
+	for _, probe := range p.probes {
+		if probe.Name() == probeName {
+			go p.checkOneProbe(ctx, probe, resultChan)
+		}
+	}
+	probeResult := <-resultChan
+	return probeResult
+}
+
+func (p *Prober) checkOneProbe(ctx context.Context, probe Probe, res chan *ProbeResult) {
 	probeRes := make(chan error)
 	var err error
 
