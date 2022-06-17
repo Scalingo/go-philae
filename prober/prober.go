@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
 	"gopkg.in/errgo.v1"
 )
 
@@ -19,7 +20,7 @@ type Probe interface {
 // checks when asked to
 type Prober struct {
 	timeout time.Duration
-	probes  []Probe
+	probes  map[string]Probe
 }
 
 // ProberOption is a function modifying some parameters of the Prober
@@ -77,6 +78,7 @@ type ProbeResult struct {
 func NewProber(opts ...ProberOption) *Prober {
 	p := &Prober{
 		timeout: 10 * time.Second,
+		probes:  make(map[string]Probe),
 	}
 	for _, opt := range opts {
 		opt(p)
@@ -85,7 +87,7 @@ func NewProber(opts ...ProberOption) *Prober {
 }
 
 func (p *Prober) AddProbe(probe Probe) {
-	p.probes = append(p.probes, probe)
+	p.probes[probe.Name()] = probe
 }
 
 // Check will run the check of each probes added and return the result in a Result struct
@@ -124,16 +126,22 @@ func (p *Prober) Check(ctx context.Context) *Result {
 }
 
 func (p *Prober) CheckOneProbe(ctx context.Context, probeName string) *ProbeResult {
-	resultChan := make(chan *ProbeResult, 1)
-	ctx, cancel := context.WithTimeout(ctx, p.timeout)
-	defer cancel()
-
-	for _, probe := range p.probes {
-		if probe.Name() == probeName {
-			go p.checkOneProbe(ctx, probe, resultChan)
-		}
+	probeResult := &ProbeResult{
+		Error: errors.Errorf("probe %v is not present in prober", probeName),
 	}
-	probeResult := <-resultChan
+
+	probe, ok := p.probes[probeName]
+
+	if ok {
+		resultChan := make(chan *ProbeResult, 1)
+		ctx, cancel := context.WithTimeout(ctx, p.timeout)
+		defer cancel()
+
+		go p.checkOneProbe(ctx, probe, resultChan)
+
+		probeResult = <-resultChan
+	}
+
 	return probeResult
 }
 

@@ -112,6 +112,15 @@ func TestProber(t *testing.T) {
 		assert.True(t, res.Healthy)
 		assert.NoError(t, res.Error)
 	})
+	t.Run("With a single not found probe", func(t *testing.T) {
+		p := NewProber()
+
+		res := p.CheckOneProbe(ctx, "test")
+
+		assert.Equal(t, "", res.Name)
+		assert.Equal(t, false, res.Healthy)
+		assert.Equal(t, "probe test is not present in prober", res.Error.Error())
+	})
 }
 
 func validateProbe(t *testing.T, probes []*ProbeResult, name string, healthy bool) error {
