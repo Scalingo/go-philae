@@ -78,7 +78,7 @@ type ProbeResult struct {
 func NewProber(opts ...ProberOption) *Prober {
 	p := &Prober{
 		timeout: 10 * time.Second,
-		probes:  make(map[string]Probe),
+		probes:  map[string]Probe{},
 	}
 	for _, opt := range opts {
 		opt(p)
