@@ -126,21 +126,19 @@ func (p *Prober) Check(ctx context.Context) *Result {
 }
 
 func (p *Prober) CheckOneProbe(ctx context.Context, probeName string) *ProbeResult {
-	probeResult := &ProbeResult{
-		Error: errors.Errorf("probe %v is not present in prober", probeName),
-	}
-
 	probe, ok := p.probes[probeName]
-
-	if ok {
-		resultChan := make(chan *ProbeResult, 1)
-		ctx, cancel := context.WithTimeout(ctx, p.timeout)
-		defer cancel()
-
-		go p.checkOneProbe(ctx, probe, resultChan)
-
-		probeResult = <-resultChan
+	if !ok {
+		return &ProbeResult{
+			Error: errors.Errorf("probe %v is not present in prober", probeName),
+		}
 	}
+
+	resultChan := make(chan *ProbeResult, 1)
+	ctx, cancel := context.WithTimeout(ctx, p.timeout)
+	defer cancel()
+
+	go p.checkOneProbe(ctx, probe, resultChan)
+	probeResult := <-resultChan
 
 	return probeResult
 }
