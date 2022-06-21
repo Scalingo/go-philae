@@ -118,7 +118,11 @@ func TestProber(t *testing.T) {
 		res := p.CheckOneProbe(ctx, "test")
 
 		assert.Equal(t, "", res.Name)
-		assert.Equal(t, false, res.Healthy)
+		assert.False(t, res.Healthy)
+
+		// Checking that the error type is correct
+		errNotFound := &NotFoundError{}
+		assert.True(t, errors.As(res.Error, errNotFound))
 		assert.Equal(t, "probe test is not present in prober", res.Error.Error())
 	})
 }
