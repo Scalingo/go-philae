@@ -2,7 +2,10 @@
 
 ## To Be Released
 
+## v4.4.5
+
 * feat(prober): change the exposed CheckOneProbe to make it usable outside of this package
+* feat(probe check): implement ErrProbeNotFound
 
 ## v4.4.4
 
