@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/pkg/errors"
 	"gopkg.in/errgo.v1"
 )
 
@@ -24,15 +25,6 @@ type Prober struct {
 
 // ProberOption is a function modifying some parameters of the Prober
 type ProberOption func(p *Prober)
-
-// NotFoundError
-type NotFoundError struct {
-	Err string
-}
-
-func (nferr NotFoundError) Error() string {
-	return nferr.Err
-}
 
 // WithTimeout is a ProberOption which defines a timeout the prober have to get
 // executed into Recommandation: it should be higher than the timeout of the
@@ -65,6 +57,10 @@ func (e *ProberError) Error() string {
 	b.WriteString(strings.Join(e.errs, ", "))
 	return b.String()
 }
+
+// ErrProbeNotFound is emitted when a check is performed on a probe that was not
+// added to the prober
+var ErrProbeNotFound = errors.New("probe not found")
 
 // Result is the data structure used to retain the data fetched from a single run of each probes
 type Result struct {
@@ -137,9 +133,7 @@ func (p *Prober) CheckOneProbe(ctx context.Context, probeName string) *ProbeResu
 	probe, ok := p.probes[probeName]
 	if !ok {
 		return &ProbeResult{
-			Error: NotFoundError{
-				Err: fmt.Sprintf("probe %v is not present in prober", probeName),
-			},
+			Error: ErrProbeNotFound,
 		}
 	}
 
