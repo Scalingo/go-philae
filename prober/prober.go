@@ -58,6 +58,10 @@ func (e *ProberError) Error() string {
 	return b.String()
 }
 
+// ErrProbeNotFound is emitted when a check is performed on a probe that was not
+// added to the prober
+var ErrProbeNotFound = errors.New("probe not found")
+
 // Result is the data structure used to retain the data fetched from a single run of each probes
 type Result struct {
 	Healthy bool           `json:"healthy"`
@@ -129,7 +133,7 @@ func (p *Prober) CheckOneProbe(ctx context.Context, probeName string) *ProbeResu
 	probe, ok := p.probes[probeName]
 	if !ok {
 		return &ProbeResult{
-			Error: errors.Errorf("probe %v is not present in prober", probeName),
+			Error: ErrProbeNotFound,
 		}
 	}
 
