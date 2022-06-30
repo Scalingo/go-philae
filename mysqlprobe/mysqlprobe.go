@@ -16,7 +16,7 @@ type MySQLProbe struct {
 
 // NewMySQLProbe instantiate a new MySQL probe:
 // - name: probe name
-// - connectionString: connection string with the form "postgres://username:password@example.com"
+// - connectionString: connection string with the form "mysql://username:password@example.com"
 func NewMySQLProbe(name, connectionString string) MySQLProbe {
 	return MySQLProbe{
 		name:             name,
