@@ -2,6 +2,8 @@
 
 ## To Be Released
 
+* feat(mysqlprobe): implement MySQL probe
+
 ## v4.4.5
 
 * feat(prober): change the exposed CheckOneProbe to make it usable outside of this package
