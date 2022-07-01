@@ -1,4 +1,4 @@
-# Go Philae v4.4.5
+# Go Philae v4.4.6
 
 Go Philae is the go implementation of our Philae health check protocol.
 
@@ -214,7 +214,29 @@ pgsqlprobe.NewPostgreSQLProbeFromURL(name, url string)
 ```
 
 * name: The name of the probe
-* url: The URL of the Redis server (e.g.: `postgres://username:password@example.com`)
+* url: The URL of the PostgreSQL server (e.g.: `postgres://username:password@example.com`)
+
+### MySQLProbe
+
+Check that a MySQL server is up and running
+
+#### Usage
+
+```
+mysqlprobe.NewMySQLProbe(name, host, password) string
+```
+
+* name: The name of the probe
+* host: The MySQL host
+* password: The password needed to access the database
+
+
+```
+mysqlprobe.NewMySQLProbeFromURL(name, url string)
+```
+
+* name: The name of the probe
+* url: The URL of the MySQL server (e.g.: `mysql://username:password@example.com`)
 
 ### SampleProbe
 
@@ -295,9 +317,9 @@ Commit, tag and create a new release:
 
 ```sh
 git add CHANGELOG.md README.md
-git commit -m "Bump v4.4.5"
+git commit -m "Bump v4.4.6"
 git push origin master
-gh release create v4.4.5
+gh release create v4.4.6
 ```
 
 The title of the release should be the version number and the text of the

@@ -2,6 +2,8 @@
 
 ## To Be Released
 
+## v4.4.6
+
 * feat(mysqlprobe): implement MySQL probe
 
 ## v4.4.5
