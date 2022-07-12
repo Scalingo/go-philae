@@ -28,7 +28,7 @@ probes := prober.NewProber()
 probes.AddProbe(redisprobe.NewRedisProbeFromURL("redis", config.E["REDIS_URL"]))
 /// ... add as many probes as needed
 
-globalRouter := philaehandler.NewRouter(prober, router)
+globalRouter := philaehandler.NewPhilaeRouter(router, prober)
 
 http.ListenAndServe(":8080", globalRouter)
 ```
