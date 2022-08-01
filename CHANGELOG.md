@@ -2,6 +2,10 @@
 
 ## To Be Released
 
+* chore(deps): bump github.com/stretchr/testify from 1.7.1 to 1.8.0
+* chore(deps): bump github.com/sirupsen/logrus from 1.8.1 to 1.9.0
+* chore(deps): bump github.com/fsouza/go-dockerclient from 1.7.11 to 1.8.1
+
 ## v4.4.6
 
 * feat(mysqlprobe): implement MySQL probe
