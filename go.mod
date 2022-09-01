@@ -3,7 +3,7 @@ module github.com/Scalingo/go-philae/v4
 go 1.17
 
 require (
-	github.com/Scalingo/go-utils/logger v1.1.1
+	github.com/Scalingo/go-utils/logger v1.2.0
 	github.com/fsouza/go-dockerclient v1.8.1
 	github.com/go-sql-driver/mysql v1.6.0
 	github.com/gorilla/mux v1.8.0
