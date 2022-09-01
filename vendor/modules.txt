@@ -76,8 +76,8 @@ github.com/docker/go-connections/nat
 # github.com/docker/go-units v0.4.0
 ## explicit
 github.com/docker/go-units
-# github.com/fsouza/go-dockerclient v1.8.1
-## explicit; go 1.17
+# github.com/fsouza/go-dockerclient v1.8.3
+## explicit; go 1.18
 github.com/fsouza/go-dockerclient
 # github.com/garyburd/redigo v1.6.2
 ## explicit
