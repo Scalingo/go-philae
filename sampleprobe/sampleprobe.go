@@ -1,7 +1,6 @@
 package sampleprobe
 
 import (
-	"context"
 	"time"
 
 	errgo "gopkg.in/errgo.v1"
@@ -35,7 +34,7 @@ func (s SampleProbe) Name() string {
 	return s.name
 }
 
-func (s SampleProbe) Check(ctx context.Context) error {
+func (s SampleProbe) Check() error {
 	time.Sleep(s.time)
 	if s.result {
 		return nil

@@ -13,7 +13,7 @@ import (
 // Probe define a minimal set of methods that a probe should implement
 type Probe interface {
 	Name() string
-	Check(ctx context.Context) error
+	Check() error
 }
 
 // Prober entrypoint of the philae api. It will retain a set of probe and run
@@ -181,6 +181,6 @@ func (p *Prober) checkOneProbe(ctx context.Context, probe Probe, res chan *Probe
 }
 
 func ProberWrapper(ctx context.Context, probe Probe, res chan error) {
-	err := probe.Check(ctx)
+	err := probe.Check()
 	res <- err
 }

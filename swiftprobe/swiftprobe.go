@@ -93,7 +93,7 @@ func (p SwiftProbe) Name() string {
 	return p.name
 }
 
-func (p SwiftProbe) Check(ctx context.Context) error {
+func (p SwiftProbe) Check() error {
 	if p.initErr != nil {
 		return p.initErr
 	}
@@ -103,6 +103,7 @@ func (p SwiftProbe) Check(ctx context.Context) error {
 		return err
 	}
 
+	ctx := context.Background()
 	err = conn.Authenticate(ctx)
 	if err != nil {
 		return err
