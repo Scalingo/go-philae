@@ -180,6 +180,7 @@ func (p *Prober) checkOneProbe(ctx context.Context, probe Probe, res chan *Probe
 	res <- probeResult
 }
 
+//nolint:revive
 func ProberWrapper(ctx context.Context, probe Probe, res chan error) {
 	err := probe.Check()
 	res <- err

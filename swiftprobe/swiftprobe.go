@@ -103,7 +103,7 @@ func (p SwiftProbe) Check() error {
 		return err
 	}
 
-	ctx := context.Background()
+	ctx := context.TODO()
 	err = conn.Authenticate(ctx)
 	if err != nil {
 		return err
