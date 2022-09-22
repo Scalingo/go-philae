@@ -152,7 +152,7 @@ func (p *Prober) checkOneProbe(ctx context.Context, probe Probe, res chan *Probe
 	var err error
 
 	begin := time.Now()
-	go Wrapper(ctx, probe, probeRes)
+	go ProberWrapper(ctx, probe, probeRes)
 
 	select {
 	case e := <-probeRes:
@@ -180,7 +180,7 @@ func (p *Prober) checkOneProbe(ctx context.Context, probe Probe, res chan *Probe
 	res <- probeResult
 }
 
-func Wrapper(ctx context.Context, probe Probe, res chan error) {
+func ProberWrapper(ctx context.Context, probe Probe, res chan error) {
 	err := probe.Check()
 	res <- err
 }
