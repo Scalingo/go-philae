@@ -3,7 +3,7 @@ package swiftprobe
 import (
 	"errors"
 
-	"github.com/ncw/swift"
+	"github.com/ncw/swift/v2"
 )
 
 type SwiftProbe struct {
