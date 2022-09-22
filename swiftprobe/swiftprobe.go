@@ -1,9 +1,10 @@
 package swiftprobe
 
 import (
+	"context"
 	"errors"
 
-	"github.com/ncw/swift"
+	"github.com/ncw/swift/v2"
 )
 
 type SwiftProbe struct {
@@ -102,7 +103,8 @@ func (p SwiftProbe) Check() error {
 		return err
 	}
 
-	err = conn.Authenticate()
+	ctx := context.TODO()
+	err = conn.Authenticate(ctx)
 	if err != nil {
 		return err
 	}
