@@ -11,7 +11,7 @@ require (
 	github.com/lib/pq v1.10.6
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	go.etcd.io/etcd/client/v2 v2.305.4
 	gopkg.in/errgo.v1 v1.0.1
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
