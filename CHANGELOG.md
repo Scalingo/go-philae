@@ -2,6 +2,11 @@
 
 ## To Be Released
 
+* chore(deps): bump go.etcd.io/etcd/client/v2 from 2.305.4 to 2.305.6
+* chore(deps): bump github.com/stretchr/testify from 1.8.0 to 1.8.1
+* chore(deps): bump github.com/lib/pq from 1.10.6 to 1.10.7
+* chore(deps): bump github.com/go-sql-driver/mysql from 1.6.0 to 1.7.0
+
 ## v4.4.7
 
 * chore(deps): bump github.com/Scalingo/go-utils/logger from 1.1.1 to 1.2.0
