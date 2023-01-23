@@ -45,6 +45,7 @@ func TestTCPProbe_Check(t *testing.T) {
 	}
 	for title, c := range cases {
 		t.Run(title, func(t *testing.T) {
+			ctx := context.Background()
 			listener, err := net.Listen("tcp", ":")
 			require.NoError(t, err)
 			defer listener.Close()
@@ -63,7 +64,7 @@ func TestTCPProbe_Check(t *testing.T) {
 			}
 
 			probe := NewTCPProbe("test-probe", tcplistener.Addr().String(), opts)
-			err = probe.Check()
+			err = probe.Check(ctx)
 			if c.err == "" {
 				require.NoError(t, err)
 				return

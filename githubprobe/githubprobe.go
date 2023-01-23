@@ -1,6 +1,7 @@
 package githubprobe
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 
@@ -41,6 +42,6 @@ func (p GithubProbe) Name() string {
 	return p.http.Name()
 }
 
-func (p GithubProbe) Check() error {
-	return p.http.Check()
+func (p GithubProbe) Check(ctx context.Context) error {
+	return p.http.Check(ctx)
 }

@@ -1,6 +1,7 @@
 package httpprobe
 
 import (
+	"context"
 	"crypto/tls"
 	"net"
 	"net/http"
@@ -38,7 +39,7 @@ func (p HTTPProbe) Name() string {
 	return p.name
 }
 
-func (p HTTPProbe) Check() error {
+func (p HTTPProbe) Check(ctx context.Context) error {
 	dialTimeout := 2
 	responseTimeout := 1
 	if p.options.DialTimeout != 0 {

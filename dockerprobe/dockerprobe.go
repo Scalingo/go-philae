@@ -1,6 +1,8 @@
 package dockerprobe
 
 import (
+	"context"
+
 	docker "github.com/fsouza/go-dockerclient"
 	errgo "gopkg.in/errgo.v1"
 )
@@ -21,7 +23,7 @@ func (p DockerProbe) Name() string {
 	return p.name
 }
 
-func (p DockerProbe) Check() error {
+func (p DockerProbe) Check(ctx context.Context) error {
 	client, err := docker.NewClient(p.endpoint)
 	if err != nil {
 		return errgo.Notef(err, "Unable to create")

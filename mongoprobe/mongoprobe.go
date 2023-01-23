@@ -1,6 +1,7 @@
 package mongoprobe
 
 import (
+	"context"
 	"crypto/tls"
 	"errors"
 	"net"
@@ -28,7 +29,7 @@ func (p MongoProbe) Name() string {
 	return p.name
 }
 
-func (p MongoProbe) Check() error {
+func (p MongoProbe) Check(ctx context.Context) error {
 	session, err := p.buildSession(p.url)
 	if err != nil {
 		return errgo.Notef(err, "Unable to contact server")

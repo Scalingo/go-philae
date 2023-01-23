@@ -1,6 +1,7 @@
 package nsqprobe
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 	"testing"
@@ -10,6 +11,7 @@ import (
 )
 
 func TestNSQProbe(t *testing.T) {
+	ctx := context.Background()
 	mockWorkingService := httpmock.NewMockHTTPServer("127.0.0.1:10001")
 
 	requestUrl, _ := url.Parse("http://127.0.0.1:10000/ping")
@@ -44,12 +46,12 @@ func TestNSQProbe(t *testing.T) {
 
 	t.Run("With a working server", func(t *testing.T) {
 		probe := NewNSQProbe("salut", "127.0.0.1", 10001, nil)
-		assert.NoError(t, probe.Check())
+		assert.NoError(t, probe.Check(ctx))
 	})
 
 	t.Run("With a non-working server", func(t *testing.T) {
 		probe := NewNSQProbe("salut", "127.0.0.1", 10000, nil)
-		assert.Error(t, probe.Check())
+		assert.Error(t, probe.Check(ctx))
 	})
 
 }

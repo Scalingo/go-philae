@@ -40,7 +40,7 @@ To create a probe, you will need to implement the following interface:
 ```
 type Probe interface {
   Name() string // Return the name of the probe
-  Check() error // Return nil if the probe check was successfull or an error otherwise
+  Check(context.Context) error // Return nil if the probe check was successfull or an error otherwise
 }
 ```
 

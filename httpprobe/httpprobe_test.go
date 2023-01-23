@@ -1,6 +1,7 @@
 package httpprobe
 
 import (
+	"context"
 	"errors"
 	"net/http"
 	"net/url"
@@ -13,8 +14,9 @@ import (
 
 func TestHttpProbe(t *testing.T) {
 	t.Run("With a unavailable server", func(t *testing.T) {
+		ctx := context.Background()
 		p := NewHTTPProbe("http", "http://localhost:6666", HTTPOptions{testing: true})
-		err := p.Check()
+		err := p.Check(ctx)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "Unable to send request")
 	})
@@ -54,11 +56,12 @@ func TestHttpProbe(t *testing.T) {
 					},
 				})
 
+				ctx := context.Background()
 				p := NewHTTPProbe("http", "http://127.0.0.1:12345/", HTTPOptions{
 					testing:            true,
 					ExpectedStatusCode: c.status,
 				})
-				err := p.Check()
+				err := p.Check(ctx)
 				if c.err != "" {
 					require.Error(t, err)
 					assert.Contains(t, err.Error(), c.err)
@@ -86,6 +89,7 @@ func TestHttpProbe(t *testing.T) {
 
 		for title, c := range cases {
 			t.Run(title, func(t *testing.T) {
+				ctx := context.Background()
 				mockWorkingService := httpmock.NewMockHTTPServer("127.0.0.1:12345")
 				defer mockWorkingService.Listener.Close()
 				requestUrl, _ := url.Parse("http://127.0.0.1:12345/")
@@ -107,7 +111,7 @@ func TestHttpProbe(t *testing.T) {
 					Checker: c.checker,
 				})
 
-				err := p.Check()
+				err := p.Check(ctx)
 				if c.err == "" {
 					require.NoError(t, err)
 					return
