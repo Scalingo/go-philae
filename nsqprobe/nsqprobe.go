@@ -5,7 +5,7 @@ import (
 	"crypto/tls"
 	"strconv"
 
-	"github.com/Scalingo/go-philae/v4/httpprobe"
+	"github.com/Scalingo/go-philae/v5/httpprobe"
 )
 
 type NSQProbe struct {

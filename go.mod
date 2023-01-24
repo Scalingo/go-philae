@@ -1,4 +1,4 @@
-module github.com/Scalingo/go-philae/v4
+module github.com/Scalingo/go-philae/v5
 
 go 1.17
 

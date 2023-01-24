@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/Scalingo/go-philae/v4/prober"
+	"github.com/Scalingo/go-philae/v5/prober"
 )
 
 func TestPhilaeProbe(t *testing.T) {
