@@ -35,7 +35,7 @@ func (s SampleProbe) Name() string {
 	return s.name
 }
 
-func (s SampleProbe) Check(ctx context.Context) error {
+func (s SampleProbe) Check(_ context.Context) error {
 	time.Sleep(s.time)
 	if s.result {
 		return nil

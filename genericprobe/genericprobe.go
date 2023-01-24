@@ -21,6 +21,6 @@ func (p *GenericProbe) Name() string {
 	return p.name
 }
 
-func (p *GenericProbe) Check(ctx context.Context) error {
+func (p *GenericProbe) Check(_ context.Context) error {
 	return p.pinger.Ping()
 }

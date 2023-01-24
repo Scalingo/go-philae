@@ -23,7 +23,7 @@ func (p DockerProbe) Name() string {
 	return p.name
 }
 
-func (p DockerProbe) Check(ctx context.Context) error {
+func (p DockerProbe) Check(_ context.Context) error {
 	client, err := docker.NewClient(p.endpoint)
 	if err != nil {
 		return errgo.Notef(err, "Unable to create")

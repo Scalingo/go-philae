@@ -37,7 +37,7 @@ func (p RedisProbe) Name() string {
 	return p.name
 }
 
-func (p RedisProbe) Check(ctx context.Context) error {
+func (p RedisProbe) Check(_ context.Context) error {
 	client := redis.NewClient(&redis.Options{
 		Addr:     p.host,
 		Password: p.password,
