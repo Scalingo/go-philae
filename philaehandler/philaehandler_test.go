@@ -6,10 +6,11 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/Scalingo/go-philae/v4/prober"
-	"github.com/Scalingo/go-philae/v4/sampleprobe"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/Scalingo/go-philae/v5/prober"
+	"github.com/Scalingo/go-philae/v5/sampleprobe"
 )
 
 func TestPhilaeHandler(t *testing.T) {

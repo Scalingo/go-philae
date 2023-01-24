@@ -9,7 +9,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/Scalingo/go-philae/v4/sampleprobe"
+	"github.com/Scalingo/go-philae/v5/sampleprobe"
 )
 
 func TestProber(t *testing.T) {
