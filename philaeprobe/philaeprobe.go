@@ -1,6 +1,7 @@
 package philaeprobe
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"io"
@@ -52,6 +53,6 @@ func (p PhilaeProbe) Name() string {
 	return p.http.Name()
 }
 
-func (p PhilaeProbe) Check() error {
-	return p.http.Check()
+func (p PhilaeProbe) Check(ctx context.Context) error {
+	return p.http.Check(ctx)
 }

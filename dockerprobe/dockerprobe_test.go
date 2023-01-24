@@ -1,6 +1,7 @@
 package dockerprobe
 
 import (
+	"context"
 	"net/http"
 	"net/url"
 	"testing"
@@ -11,6 +12,7 @@ import (
 )
 
 func TestDockerProbe(t *testing.T) {
+	ctx := context.Background()
 	headers := http.Header{}
 	headers.Add("user-agent", "go-dockerclient")
 	headers.Add("connection", "close")
@@ -50,13 +52,13 @@ func TestDockerProbe(t *testing.T) {
 
 	t.Run("With a working docker container", func(t *testing.T) {
 		probe := NewDockerProbe("docker", "127.0.0.1:11000")
-		err := probe.Check()
+		err := probe.Check(ctx)
 
 		assert.NoError(t, err)
 	})
 	t.Run("With a not working docker container", func(t *testing.T) {
 		probe := NewDockerProbe("docker", "127.0.0.1:11001")
-		err := probe.Check()
+		err := probe.Check(ctx)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "Unable to contact docker: API error (500): it's not alive!")
 	})

@@ -1,6 +1,7 @@
 package statusioprobe
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 
@@ -27,8 +28,8 @@ func (p StatusIOProbe) Name() string {
 	return p.http.Name()
 }
 
-func (p StatusIOProbe) Check() error {
-	return p.http.Check()
+func (p StatusIOProbe) Check(ctx context.Context) error {
+	return p.http.Check(ctx)
 }
 
 func (_ StatusIOChecker) Check(body io.Reader) error {

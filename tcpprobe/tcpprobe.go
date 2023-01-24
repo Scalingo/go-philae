@@ -47,7 +47,7 @@ func (p TCPProbe) Name() string {
 	return p.name
 }
 
-func (p TCPProbe) Check() error {
+func (p TCPProbe) Check(ctx context.Context) error {
 	timeout := p.options.Timeout
 	if timeout == 0 {
 		timeout = 5 * time.Second
@@ -58,7 +58,7 @@ func (p TCPProbe) Check() error {
 		return errgo.Notef(err, "invalid endpoint %v, should be host:port", p.endpoint)
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(ctx, timeout)
 	defer cancel()
 
 	addrs, err := p.options.Resolver.LookupIPAddr(ctx, host)

@@ -1,5 +1,7 @@
 package genericprobe
 
+import "context"
+
 type Pinger interface {
 	Ping() error
 }
@@ -19,6 +21,6 @@ func (p *GenericProbe) Name() string {
 	return p.name
 }
 
-func (p *GenericProbe) Check() error {
+func (p *GenericProbe) Check(_ context.Context) error {
 	return p.pinger.Ping()
 }

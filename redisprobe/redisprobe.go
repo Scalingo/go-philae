@@ -1,6 +1,7 @@
 package redisprobe
 
 import (
+	"context"
 	"net/url"
 
 	errgo "gopkg.in/errgo.v1"
@@ -36,7 +37,7 @@ func (p RedisProbe) Name() string {
 	return p.name
 }
 
-func (p RedisProbe) Check() error {
+func (p RedisProbe) Check(_ context.Context) error {
 	client := redis.NewClient(&redis.Options{
 		Addr:     p.host,
 		Password: p.password,

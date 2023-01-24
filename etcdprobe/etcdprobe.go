@@ -23,7 +23,7 @@ func (p EtcdProbe) Name() string {
 	return p.name
 }
 
-func (p EtcdProbe) Check() error {
+func (p EtcdProbe) Check(_ context.Context) error {
 	_, err := p.kapi.Get(context.Background(), "/", nil)
 	if err != nil {
 		return errgo.Notef(err, "Unable to contact server")

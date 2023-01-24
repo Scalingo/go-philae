@@ -1,6 +1,7 @@
 package nsqprobe
 
 import (
+	"context"
 	"crypto/tls"
 	"strconv"
 
@@ -28,6 +29,6 @@ func (p NSQProbe) Name() string {
 	return p.http.Name()
 }
 
-func (p NSQProbe) Check() error {
-	return p.http.Check()
+func (p NSQProbe) Check(ctx context.Context) error {
+	return p.http.Check(ctx)
 }

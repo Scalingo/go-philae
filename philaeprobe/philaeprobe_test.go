@@ -1,6 +1,7 @@
 package philaeprobe
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -14,9 +15,10 @@ import (
 )
 
 func TestPhilaeProbe(t *testing.T) {
+	ctx := context.Background()
 	t.Run("With a unaivalable server", func(t *testing.T) {
 		p := NewPhilaeProbe("http", "http://localhost:6666", 0, 0)
-		err := p.Check()
+		err := p.Check(ctx)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "Unable to send request")
 	})
@@ -26,7 +28,7 @@ func TestPhilaeProbe(t *testing.T) {
 		defer ts.Close()
 
 		p := NewPhilaeProbe("http", ts.URL, 0, 0)
-		err := p.Check()
+		err := p.Check(ctx)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "Invalid return code")
 	})
@@ -36,7 +38,7 @@ func TestPhilaeProbe(t *testing.T) {
 		defer ts.Close()
 
 		p := NewPhilaeProbe("http", ts.URL, 0, 0)
-		err := p.Check()
+		err := p.Check(ctx)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "Invalid json")
 	})
@@ -56,7 +58,7 @@ func TestPhilaeProbe(t *testing.T) {
 		defer ts.Close()
 
 		p := NewPhilaeProbe("http", ts.URL, 0, 0)
-		err := p.Check()
+		err := p.Check(ctx)
 		require.Error(t, err)
 		assert.Contains(t, err.Error(), "node-1 is down (pas bien),")
 	})
@@ -70,7 +72,7 @@ func TestPhilaeProbe(t *testing.T) {
 		defer ts.Close()
 
 		p := NewPhilaeProbe("http", ts.URL, 0, 0)
-		assert.NoError(t, p.Check())
+		assert.NoError(t, p.Check(ctx))
 	})
 }
 

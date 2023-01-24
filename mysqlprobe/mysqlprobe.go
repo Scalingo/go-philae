@@ -1,6 +1,7 @@
 package mysqlprobe
 
 import (
+	"context"
 	"database/sql"
 
 	// Mandatory for sql.Open to work
@@ -28,7 +29,7 @@ func (p MySQLProbe) Name() string {
 	return p.name
 }
 
-func (p MySQLProbe) Check() error {
+func (p MySQLProbe) Check(_ context.Context) error {
 	client, err := sql.Open("mysql", p.connectionString)
 	if err != nil {
 		return errgo.Notef(err, "fail to open a new connection to MySQL")

@@ -1,6 +1,7 @@
 package pgsqlprobe
 
 import (
+	"context"
 	"database/sql"
 
 	// Mandatory for sql.Open to work
@@ -27,7 +28,7 @@ func (p PostgreSQLProbe) Name() string {
 	return p.name
 }
 
-func (p PostgreSQLProbe) Check() error {
+func (p PostgreSQLProbe) Check(_ context.Context) error {
 	client, err := sql.Open("postgres", p.connectionString)
 	if err != nil {
 		return errgo.Notef(err, "fail to open a new connection to PostgreSQL")

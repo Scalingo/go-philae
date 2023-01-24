@@ -2,6 +2,7 @@
 
 ## To Be Released
 
+* feat(probe-interface): add support for context in the Check method
 * chore(deps): bump go.etcd.io/etcd/client/v2 from 2.305.4 to 2.305.6
 * chore(deps): bump github.com/stretchr/testify from 1.8.0 to 1.8.1
 * chore(deps): bump github.com/lib/pq from 1.10.6 to 1.10.7
