@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	errgo "gopkg.in/errgo.v1"
+	"github.com/pkg/errors"
 )
 
 // Used for tests only
@@ -13,6 +13,7 @@ type SampleProbe struct {
 	name   string
 	result bool
 	time   time.Duration
+	err    error
 }
 
 func NewSampleProbe(name string, result bool) SampleProbe {
@@ -20,6 +21,7 @@ func NewSampleProbe(name string, result bool) SampleProbe {
 		name:   name,
 		result: result,
 		time:   1 * time.Millisecond,
+		err:    errors.New("error"),
 	}
 }
 
@@ -28,6 +30,16 @@ func NewTimedSampleProbe(name string, result bool, time time.Duration) SamplePro
 		name:   name,
 		result: result,
 		time:   time,
+		err:    errors.New("error"),
+	}
+}
+
+func NewSampleProbeWithError(name string, result bool, err error) SampleProbe {
+	return SampleProbe{
+		name:   name,
+		result: result,
+		time:   1 * time.Millisecond,
+		err:    err,
 	}
 }
 
@@ -40,5 +52,5 @@ func (s SampleProbe) Check(_ context.Context) error {
 	if s.result {
 		return nil
 	}
-	return errgo.New("error")
+	return s.err
 }

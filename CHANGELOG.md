@@ -2,6 +2,8 @@
 
 ## To Be Released
 
+* feat(sampleprobe): enable setting a custom error
+
 ## v5.0.0
 
 * feat(probe-interface): add support for context in the Check method
