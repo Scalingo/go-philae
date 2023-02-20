@@ -2,6 +2,8 @@
 
 ## To Be Released
 
+## v5.1.0
+
 * feat(sampleprobe): enable setting a custom error
 
 ## v5.0.0
