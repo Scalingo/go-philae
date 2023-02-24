@@ -2,8 +2,10 @@ package elasticsearchprobe
 
 import (
 	"context"
+	"crypto/tls"
+	"net/http"
 
-	"github.com/elastic/go-elasticsearch/v8"
+	"github.com/opensearch-project/opensearch-go"
 	"github.com/pkg/errors"
 )
 
@@ -27,14 +29,19 @@ func (p ElasticsearchProbe) Name() string {
 }
 
 func (p ElasticsearchProbe) Check(_ context.Context) error {
-	cfg := elasticsearch.Config{
+	cfg := opensearch.Config{
 		Addresses: []string{p.url},
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: true,
+			},
+		},
 	}
-	es, err := elasticsearch.NewClient(cfg)
+	osClient, err := opensearch.NewClient(cfg)
 	if err != nil {
 		return errors.Wrap(err, "fail to open a new connection to Elasticsearch")
 	}
-	_, err = es.Info()
+	_, err = osClient.Info()
 	if err != nil {
 		return errors.Wrap(err, "fail to get response")
 	}
