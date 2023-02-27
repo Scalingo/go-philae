@@ -3,6 +3,7 @@ package elasticsearchprobe
 import (
 	"context"
 	"crypto/tls"
+	"crypto/x509"
 	"net/http"
 
 	"github.com/opensearch-project/opensearch-go"
@@ -10,17 +11,31 @@ import (
 )
 
 type ElasticsearchProbe struct {
-	name string
-	url  string
+	name     string
+	url      string
+	caCert   []byte
+	insecure bool
 }
 
 // NewElasticsearchProbe instantiate a new elasticsearch probe:
 // - name: probe name
 // - url : connection string with the form "http://username:password@example.com"
+// - caCert: CA certificate used for the TLS configuration
+func NewElasticsearchProbeWithTLS(name, url string, caCert []byte) ElasticsearchProbe {
+	return ElasticsearchProbe{
+		name:     name,
+		url:      url,
+		insecure: false,
+		caCert:   caCert,
+	}
+}
+
 func NewElasticsearchProbe(name, url string) ElasticsearchProbe {
 	return ElasticsearchProbe{
-		name: name,
-		url:  url,
+		name:     name,
+		url:      url,
+		insecure: true,
+		caCert:   []byte(""),
 	}
 }
 
@@ -29,11 +44,14 @@ func (p ElasticsearchProbe) Name() string {
 }
 
 func (p ElasticsearchProbe) Check(_ context.Context) error {
+	caCertPool := x509.NewCertPool()
+	caCertPool.AppendCertsFromPEM(p.caCert)
 	cfg := opensearch.Config{
 		Addresses: []string{p.url},
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: true,
+				InsecureSkipVerify: p.insecure,
+				RootCAs:            caCertPool,
 			},
 		},
 	}
