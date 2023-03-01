@@ -53,14 +53,23 @@ func (p ElasticsearchProbe) Name() string {
 }
 
 func (p ElasticsearchProbe) Check(_ context.Context) error {
-	caCertPool := x509.NewCertPool()
-	caCertPool.AppendCertsFromPEM(p.caCert)
+	var certPool *x509.CertPool
+	if p.caCert != nil {
+		certPool = x509.NewCertPool()
+		certPool.AppendCertsFromPEM(p.caCert)
+	} else {
+		var err error
+		certPool, err = x509.SystemCertPool()
+		if err != nil {
+			return errors.Wrap(err, "fail to use system certificate pool")
+		}
+	}
 	cfg := opensearch.Config{
 		Addresses: []string{p.url},
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
 				InsecureSkipVerify: p.insecure,
-				RootCAs:            caCertPool,
+				RootCAs:            certPool,
 			},
 		},
 	}
