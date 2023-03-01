@@ -80,8 +80,8 @@ github.com/docker/go-units
 # github.com/fsouza/go-dockerclient v1.9.1
 ## explicit; go 1.18
 github.com/fsouza/go-dockerclient
-# github.com/garyburd/redigo v1.6.2
-## explicit
+# github.com/garyburd/redigo v1.6.4
+## explicit; go 1.17
 # github.com/go-sql-driver/mysql v1.7.0
 ## explicit; go 1.13
 github.com/go-sql-driver/mysql
