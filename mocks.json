@@ -1,0 +1,10 @@
+{
+	"base_directory": "github.com/Scalingo/go-philae",
+	"base_package": "github.com/Scalingo/go-philae/v5",
+	"mocks": [
+		{
+			"src_package": "elasticsearchprobe",
+			"interface": "Pinger"
+		}
+	]
+}

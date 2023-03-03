@@ -9,6 +9,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/goware/httpmock v0.0.0-20150807175315-4fdb484c3e70
 	github.com/lib/pq v1.10.7
+	github.com/opensearch-project/opensearch-go v1.1.0
 	github.com/pkg/errors v0.9.1
 	github.com/sirupsen/logrus v1.9.0
 	github.com/stretchr/testify v1.8.1
@@ -21,7 +22,7 @@ require (
 require (
 	github.com/elastic/elastic-transport-go/v8 v8.0.0-20211216131617-bbee439d559c // indirect
 	github.com/elastic/go-elasticsearch/v8 v8.6.0 // indirect
-	github.com/opensearch-project/opensearch-go v1.1.0 // indirect
+	github.com/golang/mock v1.6.0 // indirect
 )
 
 require (

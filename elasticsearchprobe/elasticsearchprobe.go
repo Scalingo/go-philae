@@ -36,7 +36,7 @@ type Pinger interface {
 	Ping() error
 }
 type pinger struct {
-	opensearchClient opensearch.Client
+	opensearchClient *opensearch.Client
 }
 
 func NewPinger(url string, insecure bool, certPool *x509.CertPool) (Pinger, error) {
@@ -53,12 +53,12 @@ func NewPinger(url string, insecure bool, certPool *x509.CertPool) (Pinger, erro
 	if err != nil {
 		return nil, errors.Wrap(err, "fail to open a new connection to Elasticsearch")
 	}
-	return pinger{opensearchClient: *osClient}, nil
+	return pinger{opensearchClient: osClient}, nil
 }
 func (p pinger) Ping() error {
 	_, err := p.opensearchClient.Info()
 	if err != nil {
-		return errors.Wrap(err, "fail to get response")
+		return errors.Wrap(err, "fail to get elasticsearch info")
 	}
 	return nil
 }
