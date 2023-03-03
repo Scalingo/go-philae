@@ -36,27 +36,48 @@ type Pinger interface {
 	Ping() error
 }
 type pinger struct {
-	opensearchClient *opensearch.Client
+	url      string
+	insecure bool
+	caCert   []byte
 }
 
-func NewPinger(url string, insecure bool, certPool *x509.CertPool) (Pinger, error) {
+func NewPinger(url string, insecure bool, caCert []byte) Pinger {
+	return pinger{
+		url:      url,
+		insecure: insecure,
+		caCert:   caCert,
+	}
+}
+
+func (pg pinger) Ping() error {
+	var certPool *x509.CertPool
+	if pg.caCert != nil {
+		certPool = x509.NewCertPool()
+		certPool.AppendCertsFromPEM(pg.caCert)
+	} else {
+		var err error
+		certPool, err = x509.SystemCertPool()
+		if err != nil {
+			return errors.Wrap(err, "fail to use system certificate pool")
+		}
+	}
+
 	cfg := opensearch.Config{
-		Addresses: []string{url},
+		Addresses: []string{pg.url},
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: insecure,
+				InsecureSkipVerify: pg.insecure,
 				RootCAs:            certPool,
 			},
 		},
 	}
+
 	osClient, err := opensearch.NewClient(cfg)
 	if err != nil {
-		return nil, errors.Wrap(err, "fail to open a new connection to Elasticsearch")
+		return errors.Wrap(err, "fail to open a new connection to Elasticsearch")
 	}
-	return pinger{opensearchClient: osClient}, nil
-}
-func (p pinger) Ping() error {
-	_, err := p.opensearchClient.Info()
+
+	_, err = osClient.Info()
 	if err != nil {
 		return errors.Wrap(err, "fail to get elasticsearch info")
 	}
@@ -67,7 +88,7 @@ func (p pinger) Ping() error {
 // - name: probe name
 // - url : connection string with the form "http://username:password@example.com"
 // - opts: optionnal parameters such as providing a TLS CA certificate or allowing insecure connections
-func NewElasticsearchProbe(name, url string, opts ...ProbeOpts) (ElasticsearchProbe, error) {
+func NewElasticsearchProbe(name, url string, opts ...ProbeOpts) ElasticsearchProbe {
 	esProbe := ElasticsearchProbe{
 		name:     name,
 		url:      url,
@@ -78,23 +99,9 @@ func NewElasticsearchProbe(name, url string, opts ...ProbeOpts) (ElasticsearchPr
 		opt(&esProbe)
 	}
 
-	var certPool *x509.CertPool
-	if esProbe.caCert != nil {
-		certPool = x509.NewCertPool()
-		certPool.AppendCertsFromPEM(esProbe.caCert)
-	} else {
-		var err error
-		certPool, err = x509.SystemCertPool()
-		if err != nil {
-			return esProbe, errors.Wrap(err, "fail to use system certificate pool")
-		}
-	}
-	esPinger, err := NewPinger(esProbe.url, esProbe.insecure, certPool)
-	if err != nil {
-		return esProbe, errors.Wrap(err, "fail to create elasticsearch client")
-	}
+	esPinger := NewPinger(esProbe.url, esProbe.insecure, esProbe.caCert)
 	esProbe.pinger = esPinger
-	return esProbe, nil
+	return esProbe
 }
 
 func (p ElasticsearchProbe) Name() string {
