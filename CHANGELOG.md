@@ -2,6 +2,8 @@
 
 ## To Be Released
 
+* feat(probes): add support for elasticsearch
+
 ## v5.1.0
 
 * feat(sampleprobe): enable setting a custom error
