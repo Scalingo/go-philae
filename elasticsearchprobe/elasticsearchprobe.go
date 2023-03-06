@@ -15,7 +15,6 @@ type ElasticsearchProbe struct {
 	url      string
 	caCert   []byte
 	insecure bool
-	pinger   Pinger
 }
 
 type ProbeOpts func(*ElasticsearchProbe)
@@ -30,58 +29,6 @@ func WithCA(caCert []byte) ProbeOpts {
 	return func(esProbe *ElasticsearchProbe) {
 		esProbe.caCert = caCert
 	}
-}
-
-type Pinger interface {
-	Ping() error
-}
-type pinger struct {
-	url      string
-	insecure bool
-	caCert   []byte
-}
-
-func NewPinger(url string, insecure bool, caCert []byte) Pinger {
-	return pinger{
-		url:      url,
-		insecure: insecure,
-		caCert:   caCert,
-	}
-}
-
-func (pg pinger) Ping() error {
-	var certPool *x509.CertPool
-	if pg.caCert != nil {
-		certPool = x509.NewCertPool()
-		certPool.AppendCertsFromPEM(pg.caCert)
-	} else {
-		var err error
-		certPool, err = x509.SystemCertPool()
-		if err != nil {
-			return errors.Wrap(err, "fail to use system certificate pool")
-		}
-	}
-
-	cfg := opensearch.Config{
-		Addresses: []string{pg.url},
-		Transport: &http.Transport{
-			TLSClientConfig: &tls.Config{
-				InsecureSkipVerify: pg.insecure,
-				RootCAs:            certPool,
-			},
-		},
-	}
-
-	osClient, err := opensearch.NewClient(cfg)
-	if err != nil {
-		return errors.Wrap(err, "fail to open a new connection to Elasticsearch")
-	}
-
-	_, err = osClient.Info()
-	if err != nil {
-		return errors.Wrap(err, "fail to get elasticsearch info")
-	}
-	return nil
 }
 
 // NewElasticsearchProbe instantiate a new elasticsearch probe:
@@ -99,8 +46,6 @@ func NewElasticsearchProbe(name, url string, opts ...ProbeOpts) ElasticsearchPro
 		opt(&esProbe)
 	}
 
-	esPinger := NewPinger(esProbe.url, esProbe.insecure, esProbe.caCert)
-	esProbe.pinger = esPinger
 	return esProbe
 }
 
@@ -109,9 +54,36 @@ func (p ElasticsearchProbe) Name() string {
 }
 
 func (p ElasticsearchProbe) Check(_ context.Context) error {
-	err := p.pinger.Ping()
+	var certPool *x509.CertPool
+	if p.caCert != nil {
+		certPool = x509.NewCertPool()
+		certPool.AppendCertsFromPEM(p.caCert)
+	} else {
+		var err error
+		certPool, err = x509.SystemCertPool()
+		if err != nil {
+			return errors.Wrap(err, "fail to use system certificate pool")
+		}
+	}
+
+	cfg := opensearch.Config{
+		Addresses: []string{p.url},
+		Transport: &http.Transport{
+			TLSClientConfig: &tls.Config{
+				InsecureSkipVerify: p.insecure,
+				RootCAs:            certPool,
+			},
+		},
+	}
+
+	osClient, err := opensearch.NewClient(cfg)
 	if err != nil {
-		return errors.Wrap(err, "fail to get response")
+		return errors.Wrap(err, "fail to open a new connection to Elasticsearch")
+	}
+
+	_, err = osClient.Info()
+	if err != nil {
+		return errors.Wrap(err, "fail to get elasticsearch info")
 	}
 	return nil
 }

@@ -2,48 +2,59 @@ package elasticsearchprobe
 
 import (
 	"context"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 
-	"github.com/golang/mock/gomock"
-	"github.com/pkg/errors"
+	"github.com/Scalingo/go-philae/v5/internal/tests"
 
-	"github.com/Scalingo/go-philae/v5/elasticsearchprobe/elasticsearchprobemock"
-
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestElasticsearchProbe_Check(t *testing.T) {
-	runs := map[string]struct {
-		pingerError   error
-		expectedError string
-	}{
-		"A probe with a CA certificate should use it and return ok": {},
-		"A probe without a required CA certificate and InsecureSkipVerify should return an error": {
-			pingerError:   errors.New("failed to verify certificate: x509: certificate signed by unknown authority"),
-			expectedError: "fail to get response",
-		},
-	}
-	for name, run := range runs {
-		t.Run(name, func(t *testing.T) {
-			ctrl := gomock.NewController(t)
-			defer ctrl.Finish()
-			mockPinger := elasticsearchprobemock.NewMockPinger(ctrl)
-			mockPinger.EXPECT().Ping().Return(run.pingerError)
+	ctx := context.Background()
 
-			probe := ElasticsearchProbe{
-				name:     "testProbe",
-				url:      "https://test.test:9200",
-				insecure: false,
-				caCert:   []byte("ThisShouldBeACACert"),
-				pinger:   mockPinger,
-			}
+	okHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+	})
 
-			err := probe.Check(context.Background())
-			if run.expectedError != "" {
-				require.Contains(t, err.Error(), run.expectedError)
-				return
-			}
+	t.Run("With an HTTP server", func(t *testing.T) {
+		serv := httptest.NewServer(okHandler)
+		defer serv.Close()
+		assert.Contains(t, serv.URL, "http://")
+
+		t.Run("It should succeed", func(t *testing.T) {
+			probe := NewElasticsearchProbe("test", serv.URL)
+			err := probe.Check(ctx)
 			require.NoError(t, err)
 		})
-	}
+	})
+
+	t.Run("With an HTTPs Server", func(t *testing.T) {
+		ca, serv, err := tests.NewUnstartedServerWithTLSConfig(okHandler)
+		require.NoError(t, err)
+		serv.StartTLS()
+		defer serv.Close()
+		assert.Contains(t, serv.URL, "https://")
+
+		t.Run("It should fail if it uses a custom certificate", func(t *testing.T) {
+			probe := NewElasticsearchProbe("test", serv.URL)
+			err := probe.Check(ctx)
+			require.Error(t, err)
+			assert.Contains(t, err.Error(), "certificate signed by unknown authority")
+		})
+
+		t.Run("It should succeed if it uses a custom certificate with insecure verify", func(t *testing.T) {
+			probe := NewElasticsearchProbe("test", serv.URL, WithInsecureSkipVerify())
+			err := probe.Check(ctx)
+			require.NoError(t, err)
+		})
+
+		t.Run("It should succeed if it uses a custom certificate and passes the CA", func(t *testing.T) {
+			probe := NewElasticsearchProbe("test", serv.URL, WithCA(ca.CertificatePEM))
+			err := probe.Check(ctx)
+			require.NoError(t, err)
+		})
+	})
 }
