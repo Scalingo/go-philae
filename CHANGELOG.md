@@ -2,6 +2,8 @@
 
 ## To Be Released
 
+## v5.2.0
+
 * feat(probes): add support for elasticsearch
 
 ## v5.1.0
