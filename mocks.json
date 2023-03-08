@@ -1,0 +1,10 @@
+{
+	"base_directory": "github.com/Scalingo/go-philae",
+	"base_package": "github.com/Scalingo/go-philae/v5",
+	"mocks": [
+		{
+			"interface": "CertPoolGetter",
+			"src_package": "elasticsearchprobe"
+		}
+	]
+}

@@ -6,11 +6,21 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/golang/mock/gomock"
+
+	"github.com/Scalingo/go-philae/v5/elasticsearchprobe/elasticsearchprobemock"
 	"github.com/Scalingo/go-philae/v5/internal/tests"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func mockSystemPoolWith(ctrl *gomock.Controller, probe *ElasticsearchProbe, ca []byte) {
+	mock := elasticsearchprobemock.NewMockCertPoolGetter(ctrl)
+	mock.EXPECT().SystemPool().Return(DefaultCertPoolGetter{}.FromCustomCA(ca), nil)
+
+	probe.certPool = mock
+}
 
 func TestElasticsearchProbe_Check(t *testing.T) {
 	ctx := context.Background()
@@ -53,6 +63,15 @@ func TestElasticsearchProbe_Check(t *testing.T) {
 
 		t.Run("It should succeed if it uses a custom certificate and passes the CA", func(t *testing.T) {
 			probe := NewElasticsearchProbe("test", serv.URL, WithCA(ca.CertificatePEM))
+			err := probe.Check(ctx)
+			require.NoError(t, err)
+		})
+
+		t.Run("Using the system CA", func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+
+			probe := NewElasticsearchProbe("test", serv.URL)
+			mockSystemPoolWith(ctrl, &probe, ca.CertificatePEM)
 			err := probe.Check(ctx)
 			require.NoError(t, err)
 		})

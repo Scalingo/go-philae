@@ -2,6 +2,8 @@
 
 ## To Be Released
 
+* fix(elasticsearch) Fix unable to use System CA certificate pool
+
 ## v5.2.0
 
 * feat(probes): add support for elasticsearch
