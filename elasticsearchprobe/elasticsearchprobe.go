@@ -15,6 +15,7 @@ type ElasticsearchProbe struct {
 	url      string
 	caCert   []byte
 	insecure bool
+	certPool CertPoolGetter
 }
 
 type ProbeOpts func(*ElasticsearchProbe)
@@ -41,6 +42,7 @@ func NewElasticsearchProbe(name, url string, opts ...ProbeOpts) ElasticsearchPro
 		url:      url,
 		insecure: false,
 		caCert:   []byte(""),
+		certPool: DefaultCertPoolGetter{},
 	}
 	for _, opt := range opts {
 		opt(&esProbe)
@@ -55,12 +57,11 @@ func (p ElasticsearchProbe) Name() string {
 
 func (p ElasticsearchProbe) Check(_ context.Context) error {
 	var certPool *x509.CertPool
-	if p.caCert != nil {
-		certPool = x509.NewCertPool()
-		certPool.AppendCertsFromPEM(p.caCert)
+	if p.caCert != nil && len(p.caCert) != 0 {
+		certPool = p.certPool.FromCustomCA(p.caCert)
 	} else {
 		var err error
-		certPool, err = x509.SystemCertPool()
+		certPool, err = p.certPool.SystemPool()
 		if err != nil {
 			return errors.Wrap(err, "fail to use system certificate pool")
 		}
