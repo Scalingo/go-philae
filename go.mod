@@ -6,6 +6,7 @@ require (
 	github.com/Scalingo/go-utils/logger v1.2.0
 	github.com/fsouza/go-dockerclient v1.9.1
 	github.com/go-sql-driver/mysql v1.7.0
+	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.0
 	github.com/goware/httpmock v0.0.0-20150807175315-4fdb484c3e70
 	github.com/lib/pq v1.10.7
@@ -17,12 +18,6 @@ require (
 	gopkg.in/errgo.v1 v1.0.1
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/redis.v4 v4.2.4
-)
-
-require (
-	github.com/elastic/elastic-transport-go/v8 v8.0.0-20211216131617-bbee439d559c // indirect
-	github.com/elastic/go-elasticsearch/v8 v8.6.0 // indirect
-	github.com/golang/mock v1.6.0 // indirect
 )
 
 require (
