@@ -5,7 +5,7 @@ go 1.20
 require (
 	github.com/Scalingo/go-utils/logger v1.2.0
 	github.com/fsouza/go-dockerclient v1.9.1
-	github.com/go-sql-driver/mysql v1.7.0
+	github.com/go-sql-driver/mysql v1.7.1
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.0
 	github.com/goware/httpmock v0.0.0-20150807175315-4fdb484c3e70
