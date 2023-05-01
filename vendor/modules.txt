@@ -43,8 +43,8 @@ github.com/containerd/cgroups/stats/v1
 ## explicit; go 1.17
 github.com/containerd/containerd/pkg/userns
 github.com/containerd/containerd/sys
-# github.com/coreos/go-semver v0.3.0
-## explicit
+# github.com/coreos/go-semver v0.3.1
+## explicit; go 1.8
 github.com/coreos/go-semver/semver
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
