@@ -9,6 +9,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.0
 	github.com/goware/httpmock v0.0.0-20150807175315-4fdb484c3e70
+	github.com/jarcoal/httpmock v1.3.0
 	github.com/lib/pq v1.10.7
 	github.com/opensearch-project/opensearch-go v1.1.0
 	github.com/pkg/errors v0.9.1
