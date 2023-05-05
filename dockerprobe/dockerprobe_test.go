@@ -4,8 +4,6 @@ import (
 	"context"
 	"testing"
 
-	"github.com/jarcoal/httpmock"
-
 	"github.com/Scalingo/go-philae/v5/tests"
 
 	"github.com/stretchr/testify/assert"
@@ -15,21 +13,13 @@ import (
 func TestDockerProbe(t *testing.T) {
 	ctx := context.Background()
 
-	dockerClientHeadersMatcher := httpmock.HeaderContains("user-agent", "go-dockerclient").And(httpmock.HeaderContains("connection", "close"))
-
-	goodServer := tests.HTTPTestServer(map[tests.Route]tests.MatchResponder{
-		{Method: "GET", Path: "/containers/json"}: {
-			Matcher:   dockerClientHeadersMatcher,
-			Responder: httpmock.NewStringResponder(200, "[]"),
-		},
+	goodServer := tests.HTTPTestServer(map[tests.Route]tests.Response{
+		{Method: "GET", Path: "/containers/json"}: {Status: 200, Body: "[]"},
 	})
 	defer goodServer.Close()
 
-	badServer := tests.HTTPTestServer(map[tests.Route]tests.MatchResponder{
-		{Method: "GET", Path: "/containers/json"}: {
-			Matcher:   dockerClientHeadersMatcher,
-			Responder: httpmock.NewStringResponder(500, "it's not alive!"),
-		},
+	badServer := tests.HTTPTestServer(map[tests.Route]tests.Response{
+		{Method: "GET", Path: "/containers/json"}: {Status: 500, Body: "it's not alive!"},
 	})
 	defer badServer.Close()
 

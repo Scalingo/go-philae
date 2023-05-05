@@ -1,11 +1,8 @@
 package tests
 
 import (
-	"io"
 	"net/http"
 	"net/http/httptest"
-
-	"github.com/jarcoal/httpmock"
 )
 
 type Route struct {
@@ -13,35 +10,27 @@ type Route struct {
 	Path   string
 }
 
-type MatchResponder struct {
-	Matcher   httpmock.Matcher
-	Responder httpmock.Responder
+type Response struct {
+	Status int
+	Body   string
 }
 
-func HTTPTestServer(routes map[Route]MatchResponder) *httptest.Server {
+func HTTPTestServer(routes map[Route]Response) *httptest.Server {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		requestedRoute := Route{
 			Method: r.Method,
 			Path:   r.URL.Path,
 		}
 
-		responder, exists := routes[requestedRoute]
+		response, exists := routes[requestedRoute]
 
 		if !exists {
 			http.NotFound(w, r)
 			return
 		}
 
-		if !responder.Matcher.Check(r) {
-			http.Error(w, "headers not matching", 400)
-			return
-		}
-
-		response, _ := responder.Responder(r)
-		defer response.Body.Close()
-
-		w.WriteHeader(response.StatusCode)
-		_, _ = io.Copy(w, response.Body)
+		w.WriteHeader(response.Status)
+		_, _ = w.Write([]byte(response.Body))
 	}))
 
 	return srv

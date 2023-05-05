@@ -3,13 +3,12 @@ package httpprobe
 import (
 	"context"
 	"errors"
-	"net/http"
-	"net/url"
 	"testing"
 
-	"github.com/goware/httpmock"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/Scalingo/go-philae/v5/tests"
 )
 
 func TestHttpProbe(t *testing.T) {
@@ -40,24 +39,20 @@ func TestHttpProbe(t *testing.T) {
 
 		for title, c := range cases {
 			t.Run(title, func(t *testing.T) {
-				mockWorkingService := httpmock.NewMockHTTPServer("127.0.0.1:12345")
-				defer mockWorkingService.Listener.Close()
-				requestUrl, _ := url.Parse("http://127.0.0.1:12345/")
-				mockWorkingService.AddResponses([]httpmock.MockResponse{
-					{
-						Request: http.Request{
-							Method: "GET",
-							URL:    requestUrl,
-						},
-						Response: httpmock.Response{
-							StatusCode: 500,
-							Body:       "Error",
-						},
-					},
+				var errorMessage string
+
+				if c.err == "" {
+					errorMessage = "Error"
+				} else {
+					errorMessage = c.err
+				}
+
+				srv := tests.HTTPTestServer(map[tests.Route]tests.Response{
+					{Method: "GET", Path: "/"}: {Status: 500, Body: errorMessage},
 				})
 
 				ctx := context.Background()
-				p := NewHTTPProbe("http", "http://127.0.0.1:12345/", HTTPOptions{
+				p := NewHTTPProbe("http", srv.URL, HTTPOptions{
 					testing:            true,
 					ExpectedStatusCode: c.status,
 				})
@@ -90,23 +85,12 @@ func TestHttpProbe(t *testing.T) {
 		for title, c := range cases {
 			t.Run(title, func(t *testing.T) {
 				ctx := context.Background()
-				mockWorkingService := httpmock.NewMockHTTPServer("127.0.0.1:12345")
-				defer mockWorkingService.Listener.Close()
-				requestUrl, _ := url.Parse("http://127.0.0.1:12345/")
-				mockWorkingService.AddResponses([]httpmock.MockResponse{
-					{
-						Request: http.Request{
-							Method: "GET",
-							URL:    requestUrl,
-						},
-						Response: httpmock.Response{
-							StatusCode: 200,
-							Body:       "OK",
-						},
-					},
+
+				srv := tests.HTTPTestServer(map[tests.Route]tests.Response{
+					{Method: "GET", Path: "/"}: {Status: 200, Body: "OK"},
 				})
 
-				p := NewHTTPProbe("http", "http://127.0.0.1:12345/", HTTPOptions{
+				p := NewHTTPProbe("http", srv.URL, HTTPOptions{
 					testing: true,
 					Checker: c.checker,
 				})
