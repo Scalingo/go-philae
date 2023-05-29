@@ -4,8 +4,8 @@ import (
 	"context"
 	"net/url"
 
+	redis "github.com/redis/go-redis/v9"
 	errgo "gopkg.in/errgo.v1"
-	redis "gopkg.in/redis.v4"
 )
 
 type RedisProbe struct {
@@ -37,7 +37,7 @@ func (p RedisProbe) Name() string {
 	return p.name
 }
 
-func (p RedisProbe) Check(_ context.Context) error {
+func (p RedisProbe) Check(ctx context.Context) error {
 	client := redis.NewClient(&redis.Options{
 		Addr:     p.host,
 		Password: p.password,
@@ -45,7 +45,7 @@ func (p RedisProbe) Check(_ context.Context) error {
 	})
 	defer client.Close()
 
-	_, err := client.Ping().Result()
+	_, err := client.Ping(ctx).Result()
 	if err != nil {
 		return errgo.Notef(err, "unable to contact Redis host")
 	}

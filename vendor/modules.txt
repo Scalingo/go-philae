@@ -36,6 +36,9 @@ github.com/Microsoft/hcsshim/osversion
 # github.com/Scalingo/go-utils/logger v1.2.0
 ## explicit; go 1.17
 github.com/Scalingo/go-utils/logger
+# github.com/cespare/xxhash/v2 v2.2.0
+## explicit; go 1.11
+github.com/cespare/xxhash/v2
 # github.com/containerd/cgroups v1.0.4
 ## explicit; go 1.17
 github.com/containerd/cgroups/stats/v1
@@ -49,6 +52,9 @@ github.com/coreos/go-semver/semver
 # github.com/davecgh/go-spew v1.1.1
 ## explicit
 github.com/davecgh/go-spew/spew
+# github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
+## explicit
+github.com/dgryski/go-rendezvous
 # github.com/docker/docker v20.10.24+incompatible
 ## explicit
 github.com/docker/docker/api/types/blkiodev
@@ -80,8 +86,6 @@ github.com/docker/go-units
 # github.com/fsouza/go-dockerclient v1.9.1
 ## explicit; go 1.18
 github.com/fsouza/go-dockerclient
-# github.com/garyburd/redigo v1.6.4
-## explicit; go 1.17
 # github.com/go-sql-driver/mysql v1.7.1
 ## explicit; go 1.13
 github.com/go-sql-driver/mysql
@@ -152,6 +156,16 @@ github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
+# github.com/redis/go-redis/v9 v9.0.5
+## explicit; go 1.18
+github.com/redis/go-redis/v9
+github.com/redis/go-redis/v9/internal
+github.com/redis/go-redis/v9/internal/hashtag
+github.com/redis/go-redis/v9/internal/hscan
+github.com/redis/go-redis/v9/internal/pool
+github.com/redis/go-redis/v9/internal/proto
+github.com/redis/go-redis/v9/internal/rand
+github.com/redis/go-redis/v9/internal/util
 # github.com/sirupsen/logrus v1.9.0
 ## explicit; go 1.13
 github.com/sirupsen/logrus
@@ -188,8 +202,6 @@ golang.org/x/sys/unix
 golang.org/x/sys/windows
 # golang.org/x/term v0.5.0
 ## explicit; go 1.17
-# golang.org/x/text v0.7.0
-## explicit; go 1.17
 # golang.org/x/tools v0.6.0
 ## explicit; go 1.18
 golang.org/x/tools/cmd/stringer
@@ -207,9 +219,6 @@ golang.org/x/tools/internal/pkgbits
 golang.org/x/tools/internal/tokeninternal
 golang.org/x/tools/internal/typeparams
 golang.org/x/tools/internal/typesinternal
-# gopkg.in/bsm/ratelimit.v1 v1.0.0-20160220154919-db14e161995a
-## explicit
-gopkg.in/bsm/ratelimit.v1
 # gopkg.in/errgo.v1 v1.0.1
 ## explicit
 gopkg.in/errgo.v1
@@ -220,15 +229,6 @@ gopkg.in/mgo.v2/bson
 gopkg.in/mgo.v2/internal/json
 gopkg.in/mgo.v2/internal/sasl
 gopkg.in/mgo.v2/internal/scram
-# gopkg.in/redis.v4 v4.2.4
-## explicit
-gopkg.in/redis.v4
-gopkg.in/redis.v4/internal
-gopkg.in/redis.v4/internal/consistenthash
-gopkg.in/redis.v4/internal/errors
-gopkg.in/redis.v4/internal/hashtag
-gopkg.in/redis.v4/internal/pool
-gopkg.in/redis.v4/internal/proto
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
