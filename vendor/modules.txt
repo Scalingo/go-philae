@@ -15,7 +15,7 @@ github.com/Scalingo/go-utils/logger
 # github.com/cespare/xxhash/v2 v2.2.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/containerd/containerd v1.7.1
+# github.com/containerd/containerd v1.7.2
 ## explicit; go 1.19
 github.com/containerd/containerd/pkg/userns
 # github.com/coreos/go-semver v0.3.1
