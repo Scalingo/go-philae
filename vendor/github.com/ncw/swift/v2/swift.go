@@ -60,11 +60,11 @@ const (
 //
 // For reference some common AuthUrls looks like this:
 //
-//  Rackspace US        https://auth.api.rackspacecloud.com/v1.0
-//  Rackspace UK        https://lon.auth.api.rackspacecloud.com/v1.0
-//  Rackspace v2        https://identity.api.rackspacecloud.com/v2.0
-//  Memset Memstore UK  https://auth.storage.memset.com/v1.0
-//  Memstore v2         https://auth.storage.memset.com/v2.0
+//	Rackspace US        https://auth.api.rackspacecloud.com/v1.0
+//	Rackspace UK        https://lon.auth.api.rackspacecloud.com/v1.0
+//	Rackspace v2        https://identity.api.rackspacecloud.com/v2.0
+//	Memset Memstore UK  https://auth.storage.memset.com/v1.0
+//	Memstore v2         https://auth.storage.memset.com/v2.0
 //
 // When using Google Appengine you must provide the Connection with an
 // appengine-specific Transport:
@@ -152,7 +152,7 @@ func setFromEnv(param interface{}, name string) (err error) {
 			*result, err = strconv.Atoi(val)
 		}
 	case *bool:
-		if *result == false {
+		if !*result {
 			*result, err = strconv.ParseBool(val)
 		}
 	case *time.Duration:
@@ -176,56 +176,62 @@ func setFromEnv(param interface{}, name string) (err error) {
 // To make a new Connection object entirely from the environment you
 // would do:
 //
-//    c := new(Connection)
-//    err := c.ApplyEnvironment()
-//    if err != nil { log.Fatal(err) }
+//	c := new(Connection)
+//	err := c.ApplyEnvironment()
+//	if err != nil { log.Fatal(err) }
 //
 // The naming of these variables follows the official Openstack naming
 // scheme so it should be compatible with OpenStack rc files.
 //
 // For v1 authentication (obsolete)
-//     ST_AUTH - Auth URL
-//     ST_USER - UserName for api
-//     ST_KEY - Key for api access
+//
+//	ST_AUTH - Auth URL
+//	ST_USER - UserName for api
+//	ST_KEY - Key for api access
 //
 // For v2 authentication
-//     OS_AUTH_URL - Auth URL
-//     OS_USERNAME - UserName for api
-//     OS_PASSWORD - Key for api access
-//     OS_TENANT_NAME - Name of the tenant
-//     OS_TENANT_ID   - Id of the tenant
-//     OS_REGION_NAME - Region to use - default is use first region
+//
+//	OS_AUTH_URL - Auth URL
+//	OS_USERNAME - UserName for api
+//	OS_PASSWORD - Key for api access
+//	OS_TENANT_NAME - Name of the tenant
+//	OS_TENANT_ID   - Id of the tenant
+//	OS_REGION_NAME - Region to use - default is use first region
 //
 // For v3 authentication
-//     OS_AUTH_URL - Auth URL
-//     OS_USERNAME - UserName for api
-//     OS_USER_ID - User Id
-//     OS_PASSWORD - Key for api access
-//     OS_APPLICATION_CREDENTIAL_ID - Application Credential ID
-//     OS_APPLICATION_CREDENTIAL_NAME - Application Credential Name
-//     OS_APPLICATION_CREDENTIAL_SECRET - Application Credential Secret
-//     OS_USER_DOMAIN_NAME - User's domain name
-//     OS_USER_DOMAIN_ID - User's domain Id
-//     OS_PROJECT_NAME - Name of the project
-//     OS_PROJECT_DOMAIN_NAME - Name of the tenant's domain, only needed if it differs from the user domain
-//     OS_PROJECT_DOMAIN_ID - Id of the tenant's domain, only needed if it differs the from user domain
-//     OS_TRUST_ID - If of the trust
-//     OS_REGION_NAME - Region to use - default is use first region
+//
+//	OS_AUTH_URL - Auth URL
+//	OS_USERNAME - UserName for api
+//	OS_USER_ID - User Id
+//	OS_PASSWORD - Key for api access
+//	OS_APPLICATION_CREDENTIAL_ID - Application Credential ID
+//	OS_APPLICATION_CREDENTIAL_NAME - Application Credential Name
+//	OS_APPLICATION_CREDENTIAL_SECRET - Application Credential Secret
+//	OS_USER_DOMAIN_NAME - User's domain name
+//	OS_USER_DOMAIN_ID - User's domain Id
+//	OS_PROJECT_NAME - Name of the project
+//	OS_PROJECT_DOMAIN_NAME - Name of the tenant's domain, only needed if it differs from the user domain
+//	OS_PROJECT_DOMAIN_ID - Id of the tenant's domain, only needed if it differs the from user domain
+//	OS_TRUST_ID - If of the trust
+//	OS_REGION_NAME - Region to use - default is use first region
 //
 // Other
-//     OS_ENDPOINT_TYPE - Endpoint type public, internal or admin
-//     ST_AUTH_VERSION - Choose auth version - 1, 2 or 3 or leave at 0 for autodetect
+//
+//	OS_ENDPOINT_TYPE - Endpoint type public, internal or admin
+//	ST_AUTH_VERSION - Choose auth version - 1, 2 or 3 or leave at 0 for autodetect
 //
 // For manual authentication
-//     OS_STORAGE_URL - storage URL from alternate authentication
-//     OS_AUTH_TOKEN - Auth Token from alternate authentication
+//
+//	OS_STORAGE_URL - storage URL from alternate authentication
+//	OS_AUTH_TOKEN - Auth Token from alternate authentication
 //
 // Library specific
-//     GOSWIFT_RETRIES - Retries on error (default is 3)
-//     GOSWIFT_USER_AGENT - HTTP User agent (default goswift/1.0)
-//     GOSWIFT_CONNECT_TIMEOUT - Connect channel timeout with unit, eg "10s", "100ms" (default "10s")
-//     GOSWIFT_TIMEOUT - Data channel timeout with unit, eg "10s", "100ms" (default "60s")
-//     GOSWIFT_INTERNAL - Set this to "true" to use the the internal network (obsolete - use OS_ENDPOINT_TYPE)
+//
+//	GOSWIFT_RETRIES - Retries on error (default is 3)
+//	GOSWIFT_USER_AGENT - HTTP User agent (default goswift/1.0)
+//	GOSWIFT_CONNECT_TIMEOUT - Connect channel timeout with unit, eg "10s", "100ms" (default "10s")
+//	GOSWIFT_TIMEOUT - Data channel timeout with unit, eg "10s", "100ms" (default "60s")
+//	GOSWIFT_INTERNAL - Set this to "true" to use the the internal network (obsolete - use OS_ENDPOINT_TYPE)
 func (c *Connection) ApplyEnvironment() (err error) {
 	for _, item := range []struct {
 		result interface{}
@@ -603,7 +609,7 @@ func (c *Connection) authenticated() bool {
 	if c.Expires.IsZero() {
 		return true
 	}
-	timeUntilExpiry := c.Expires.Sub(time.Now())
+	timeUntilExpiry := time.Until(c.Expires)
 	return timeUntilExpiry >= 60*time.Second
 }
 
@@ -649,7 +655,7 @@ func (c *Connection) QueryInfo(ctx context.Context) (infos SwiftInfo, err error)
 	if err == nil {
 		if resp.StatusCode != http.StatusOK {
 			drainAndClose(resp.Body, nil)
-			return nil, fmt.Errorf("Invalid status code for info request: %d", resp.StatusCode)
+			return nil, fmt.Errorf("invalid status code for info request: %d", resp.StatusCode)
 		}
 		err = readJson(resp, &infos)
 		if err == nil {
@@ -754,7 +760,7 @@ func (c *Connection) Call(ctx context.Context, targetUrl string, p RequestOpts) 
 				if k == "Content-Length" {
 					req.ContentLength, err = strconv.ParseInt(v, 10, 64)
 					if err != nil {
-						err = fmt.Errorf("Invalid %q header %q: %v", k, v, err)
+						err = fmt.Errorf("invalid %q header %q: %v", k, v, err)
 						return
 					}
 				} else {
@@ -969,7 +975,7 @@ func (c *Connection) isLastPage(length int, limit int) bool {
 
 // ContainersAll is like Containers but it returns all the Containers
 //
-// It calls Containers multiple times using the Marker parameter
+// # It calls Containers multiple times using the Marker parameter
 //
 // It has a default Limit parameter but you may pass in your own
 func (c *Connection) ContainersAll(ctx context.Context, opts *ContainersOpts) ([]Container, error) {
@@ -991,7 +997,7 @@ func (c *Connection) ContainersAll(ctx context.Context, opts *ContainersOpts) ([
 
 // ContainerNamesAll is like ContainerNames but it returns all the Containers
 //
-// It calls ContainerNames multiple times using the Marker parameter
+// # It calls ContainerNames multiple times using the Marker parameter
 //
 // It has a default Limit parameter but you may pass in your own
 func (c *Connection) ContainerNamesAll(ctx context.Context, opts *ContainersOpts) ([]string, error) {
@@ -1114,16 +1120,13 @@ func (c *Connection) Objects(ctx context.Context, container string, opts *Object
 			object.ContentType = "application/directory"
 		}
 		if object.ServerLastModified != "" {
-			// 2012-11-11T14:49:47.887250
+			// e.g. 2012-11-11T14:49:47, 2012-11-11T14:49:47Z, 2012-11-11T14:49:47.887250, or 2012-11-11T14:49:47.887250Z
+			// Remove the Z suffix and fractional seconds if present. This then keeps it consistent with Object which
+			// can only return timestamps accurate to 1 second
 			//
-			// Remove fractional seconds if present. This
-			// then keeps it consistent with Object
-			// which can only return timestamps accurate
-			// to 1 second
-			//
-			// The TimeFormat will parse fractional
-			// seconds if desired though
-			datetime := strings.SplitN(object.ServerLastModified, ".", 2)[0]
+			// The TimeFormat will parse fractional seconds if desired though
+			lastModified := strings.TrimSuffix(object.ServerLastModified, "Z")
+			datetime := strings.SplitN(lastModified, ".", 2)[0]
 			object.LastModified, err = time.Parse(TimeFormat, datetime)
 			if err != nil {
 				return nil, err
@@ -1138,7 +1141,7 @@ func (c *Connection) Objects(ctx context.Context, container string, opts *Object
 
 // objectsAllOpts makes a copy of opts if set or makes a new one and
 // overrides Limit and Marker
-// Marker is not overriden if KeepMarker is set
+// Marker is not overridden if KeepMarker is set
 func objectsAllOpts(opts *ObjectsOpts, Limit int) *ObjectsOpts {
 	var newOpts ObjectsOpts
 	if opts != nil {
@@ -1167,7 +1170,7 @@ type ObjectsWalkFn func(context.Context, *ObjectsOpts) (interface{}, error)
 // Pass in a closure `walkFn` which calls Objects or ObjectNames with
 // the *ObjectsOpts passed to it and does something with the results.
 //
-// Errors will be returned from this function
+// # Errors will be returned from this function
 //
 // It has a default Limit parameter but you may pass in your own
 func (c *Connection) ObjectsWalk(ctx context.Context, container string, opts *ObjectsOpts, walkFn ObjectsWalkFn) error {
@@ -1440,7 +1443,7 @@ func (file *ObjectCreateFile) Headers() (Headers, error) {
 	select {
 	case <-file.done:
 	default:
-		return nil, fmt.Errorf("Cannot get metadata, object upload failed or has not yet completed.")
+		return nil, fmt.Errorf("cannot get metadata, object upload failed or has not yet completed")
 	}
 	return file.headers, nil
 }
@@ -1813,7 +1816,7 @@ func (c *Connection) objectOpen(ctx context.Context, container string, objectNam
 // the object.  This satisfies the io.ReadCloser and the io.Seeker
 // interfaces.
 //
-// You must call Close() on contents when finished
+// # You must call Close() on contents when finished
 //
 // Returns the headers of the response.
 //
@@ -1907,7 +1910,7 @@ func (c *Connection) ObjectTempUrl(container string, objectName string, secretKe
 
 // parseResponseStatus parses string like "200 OK" and returns Error.
 //
-// For status codes beween 200 and 299, this returns nil.
+// For status codes between 200 and 299, this returns nil.
 func parseResponseStatus(resp string, errorMap errorMap) error {
 	code := 0
 	reason := resp
@@ -2243,7 +2246,7 @@ func (c *Connection) ObjectCopy(ctx context.Context, srcContainer string, srcObj
 
 // ObjectMove does a server side move of an object to a new position
 //
-// This is a convenience method which calls ObjectCopy then ObjectDelete
+// # This is a convenience method which calls ObjectCopy then ObjectDelete
 //
 // All metadata is preserved.
 //
@@ -2258,7 +2261,7 @@ func (c *Connection) ObjectMove(ctx context.Context, srcContainer string, srcObj
 
 // ObjectUpdateContentType updates the content type of an object
 //
-// This is a convenience method which calls ObjectCopy
+// # This is a convenience method which calls ObjectCopy
 //
 // All other metadata is preserved.
 func (c *Connection) ObjectUpdateContentType(ctx context.Context, container string, objectName string, contentType string) (err error) {
