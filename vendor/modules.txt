@@ -17,6 +17,7 @@ github.com/Scalingo/go-utils/logger
 github.com/cespare/xxhash/v2
 # github.com/containerd/containerd v1.7.2
 ## explicit; go 1.19
+github.com/containerd/containerd/log
 github.com/containerd/containerd/pkg/userns
 # github.com/coreos/go-semver v0.3.1
 ## explicit; go 1.8
@@ -27,7 +28,7 @@ github.com/davecgh/go-spew/spew
 # github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
 ## explicit
 github.com/dgryski/go-rendezvous
-# github.com/docker/docker v23.0.3+incompatible
+# github.com/docker/docker v24.0.5+incompatible
 ## explicit
 github.com/docker/docker/api/types/blkiodev
 github.com/docker/docker/api/types/container
@@ -46,7 +47,9 @@ github.com/docker/docker/pkg/idtools
 github.com/docker/docker/pkg/ioutils
 github.com/docker/docker/pkg/jsonmessage
 github.com/docker/docker/pkg/longpath
+github.com/docker/docker/pkg/meminfo
 github.com/docker/docker/pkg/pools
+github.com/docker/docker/pkg/process
 github.com/docker/docker/pkg/stdcopy
 github.com/docker/docker/pkg/system
 # github.com/docker/go-connections v0.4.0
