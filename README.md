@@ -1,4 +1,4 @@
-# Go Philae v5.2.1
+# Go Philae v5.2.2
 
 Go Philae is the go implementation of our Philae health check protocol.
 
@@ -20,7 +20,7 @@ github.com/Scalingo/go-philae/v5
 
 To use it in an existing project, you will need to add a prober with some probes, pass it to the handler and generate the route.
 
-```
+```go
 router := handlers.NewRouter("http")
 // ... configure your routes
 
@@ -37,7 +37,7 @@ http.ListenAndServe(":8080", globalRouter)
 
 To create a probe, you will need to implement the following interface:
 
-```
+```go
 type Probe interface {
   Name() string // Return the name of the probe
   Check(context.Context) error // Return nil if the probe check was successfull or an error otherwise
@@ -61,7 +61,7 @@ Check that the docker daemon is running.
 
 #### Usage
 
-```
+```go
 dockerprobe.NewDockerProbe(name, endpoint string)
 ```
 
@@ -74,7 +74,7 @@ Check that a etcd server is running
 
 #### Usage
 
-```
+```go
 etcdprobe.NewEtcdProbe(name string, client etcd.KeysAPI)
 ```
 
@@ -88,7 +88,7 @@ It use the official GitHub status API to check if there is no "major" problem wi
 
 #### Usage
 
-```
+```go
 githubprobe.NewGithubProbe(name string)
 ```
 
@@ -101,7 +101,7 @@ It use the official GitLab Status (StatusIO page) to check if there no "major" p
 
 #### Usage
 
-```
+```go
 gitlabprobe.NewGitLabProbe(name string)
 ```
 
@@ -114,7 +114,7 @@ It will send a GET request to an endpoint and check that the response code is in
 
 #### Usage
 
-```
+```go
 httpprobe.NewHTTPProbe(name, endpoint sring, opts HTTPOptions)
 ```
 
@@ -137,7 +137,7 @@ Check that a MongoDB database is up and running.
 
 #### Usage
 
-```
+```go
 mongoprobe.NewMongoProbe(name, url string)
 ```
 
@@ -150,7 +150,7 @@ Check that a nsq database is up and running.
 
 #### Usage
 
-```
+```go
 nsqprobe.NewNSQProbe(name, host string, port int)
 ```
 
@@ -164,7 +164,7 @@ Check that another service using Philae probe is running and healthy.
 
 #### Usage
 
-```
+```go
 philaeprobe.NewPhilaeProbe(name, endpoint string, dialTimeout, responseTimeout int)
 ```
 
@@ -178,7 +178,7 @@ Check that a Redis server is up and running
 
 #### Usage
 
-```
+```go
 redisprobe.NewRedisProbe(name, host, password) string
 ```
 
@@ -187,7 +187,7 @@ redisprobe.NewRedisProbe(name, host, password) string
 * password: The password needed to access the database
 
 
-```
+```go
 redisprobe.NewRedisProbeFromURL(name, url string)
 ```
 
@@ -200,7 +200,7 @@ Check that a PostgreSQL server is up and running
 
 #### Usage
 
-```
+```go
 pgsqlprobe.NewPostgreSQLProbe(name, host, password) string
 ```
 
@@ -209,7 +209,7 @@ pgsqlprobe.NewPostgreSQLProbe(name, host, password) string
 * password: The password needed to access the database
 
 
-```
+```go
 pgsqlprobe.NewPostgreSQLProbeFromURL(name, url string)
 ```
 
@@ -222,7 +222,7 @@ Check that a MySQL server is up and running
 
 #### Usage
 
-```
+```go
 mysqlprobe.NewMySQLProbe(name, host, password) string
 ```
 
@@ -231,7 +231,7 @@ mysqlprobe.NewMySQLProbe(name, host, password) string
 * password: The password needed to access the database
 
 
-```
+```go
 mysqlprobe.NewMySQLProbeFromURL(name, url string)
 ```
 
@@ -244,14 +244,14 @@ A probe only used for testing. It will always return the same result
 
 #### Usage
 
-```
+```go
 sampleprobe.NewSampleProbe(name string, result bool)
 ```
 
 * name: The name of the probe
 * result: Is the check successful or not
 
-```
+```go
 sampleprobe.NewTimedSampleProbe(name string, result bool, time time.Duration)
 ```
 
@@ -265,7 +265,7 @@ This probe will check that a service using StatusIO is healthy
 
 #### Usage
 
-```
+```go
 statusioprobe.NewStatusIOProbe(name, id string)
 ```
 
@@ -279,7 +279,7 @@ It creates a new connection and try to authenticate.
 
 #### Usage
 
-```
+```go
 swiftprobe.NewSwiftProbe(name, url, region, tenant, username, password string)
 ```
 
@@ -295,7 +295,7 @@ Check that a TCP server accept connection.
 
 #### Usage
 
-```golang
+```go
 tcpprobe.NewTCPProbe(name, endpoint string, opts TCPOptions)
 ```
 
@@ -316,17 +316,21 @@ Bump new version number in:
 Commit, tag and create a new release:
 
 ```sh
-git checkout -b release/5.2.1
+version="5.2.2"
+
+git switch --create release/${version}
 git add CHANGELOG.md README.md
-git commit -m "Bump v5.2.1"
-git push origin release/5.2.1
+git commit --message="feat: bump v${version}"
+git push --set-upstream origin release/${version}
+gh pr create --reviewer=john-scalingo --fill-first
 ```
 
 The make a PR. Once the PR is merged:
+
 ```sh
 git pull origin master
-gh release create v5.2.1
+gh release create v${version} --generate-notes
 ```
 
 The title of the release should be the version number and the text of the
-release is the same as the changelog.
+release should be the generated notes from GitHub.

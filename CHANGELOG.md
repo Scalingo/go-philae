@@ -2,6 +2,10 @@
 
 ## To Be Released
 
+## v5.2.2
+
+* Various Dependabot upgrades
+
 ## v5.2.1
 
 * fix(elasticsearch) Fix unable to use System CA certificate pool
