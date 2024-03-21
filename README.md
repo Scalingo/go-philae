@@ -329,6 +329,8 @@ The make a PR. Once the PR is merged:
 
 ```sh
 git pull origin master
+git tag ${version}
+git push origin master ${version}
 gh release create v${version} --generate-notes
 ```
 
