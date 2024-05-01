@@ -6,8 +6,8 @@ filippo.io/edwards25519/field
 ## explicit; go 1.16
 github.com/Azure/go-ansiterm
 github.com/Azure/go-ansiterm/winterm
-# github.com/Microsoft/go-winio v0.6.1
-## explicit; go 1.17
+# github.com/Microsoft/go-winio v0.6.2
+## explicit; go 1.21
 github.com/Microsoft/go-winio
 github.com/Microsoft/go-winio/internal/fs
 github.com/Microsoft/go-winio/internal/socket
@@ -16,7 +16,7 @@ github.com/Microsoft/go-winio/pkg/guid
 # github.com/Scalingo/go-utils/logger v1.2.0
 ## explicit; go 1.17
 github.com/Scalingo/go-utils/logger
-# github.com/cespare/xxhash/v2 v2.2.0
+# github.com/cespare/xxhash/v2 v2.3.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
 # github.com/containerd/containerd v1.7.2
@@ -36,7 +36,7 @@ github.com/davecgh/go-spew/spew
 # github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
 ## explicit
 github.com/dgryski/go-rendezvous
-# github.com/docker/docker v26.0.2+incompatible
+# github.com/docker/docker v26.1.1+incompatible
 ## explicit
 github.com/docker/docker/api/types/blkiodev
 github.com/docker/docker/api/types/container
@@ -84,7 +84,7 @@ github.com/gorilla/mux
 # github.com/json-iterator/go v1.1.12
 ## explicit; go 1.12
 github.com/json-iterator/go
-# github.com/klauspost/compress v1.17.7
+# github.com/klauspost/compress v1.17.8
 ## explicit; go 1.20
 github.com/klauspost/compress
 github.com/klauspost/compress/fse
@@ -174,37 +174,10 @@ go.etcd.io/etcd/client/pkg/v3/types
 # go.etcd.io/etcd/client/v2 v2.305.13
 ## explicit; go 1.21
 go.etcd.io/etcd/client/v2
-# golang.org/x/mod v0.17.0
-## explicit; go 1.18
-golang.org/x/mod/semver
-# golang.org/x/sync v0.7.0
-## explicit; go 1.18
-golang.org/x/sync/errgroup
 # golang.org/x/sys v0.19.0
 ## explicit; go 1.18
 golang.org/x/sys/unix
 golang.org/x/sys/windows
-# golang.org/x/tools v0.20.0
-## explicit; go 1.19
-golang.org/x/tools/cmd/stringer
-golang.org/x/tools/go/gcexportdata
-golang.org/x/tools/go/internal/packagesdriver
-golang.org/x/tools/go/packages
-golang.org/x/tools/go/types/objectpath
-golang.org/x/tools/internal/aliases
-golang.org/x/tools/internal/event
-golang.org/x/tools/internal/event/core
-golang.org/x/tools/internal/event/keys
-golang.org/x/tools/internal/event/label
-golang.org/x/tools/internal/event/tag
-golang.org/x/tools/internal/gcimporter
-golang.org/x/tools/internal/gocommand
-golang.org/x/tools/internal/packagesinternal
-golang.org/x/tools/internal/pkgbits
-golang.org/x/tools/internal/stdlib
-golang.org/x/tools/internal/tokeninternal
-golang.org/x/tools/internal/typesinternal
-golang.org/x/tools/internal/versions
 # gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127
 ## explicit
 # gopkg.in/errgo.v1 v1.0.1
