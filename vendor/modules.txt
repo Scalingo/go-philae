@@ -36,7 +36,7 @@ github.com/davecgh/go-spew/spew
 # github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
 ## explicit
 github.com/dgryski/go-rendezvous
-# github.com/docker/docker v27.1.0+incompatible
+# github.com/docker/docker v27.1.1+incompatible
 ## explicit
 github.com/docker/docker/api/types/blkiodev
 github.com/docker/docker/api/types/container
@@ -65,7 +65,7 @@ github.com/docker/go-connections/nat
 github.com/docker/go-units
 # github.com/frankban/quicktest v1.14.6
 ## explicit; go 1.13
-# github.com/fsouza/go-dockerclient v1.11.0
+# github.com/fsouza/go-dockerclient v1.11.2
 ## explicit; go 1.21
 github.com/fsouza/go-dockerclient
 # github.com/go-sql-driver/mysql v1.8.1
@@ -103,11 +103,11 @@ github.com/moby/docker-image-spec/specs-go/v1
 # github.com/moby/patternmatcher v0.6.0
 ## explicit; go 1.19
 github.com/moby/patternmatcher
-# github.com/moby/sys/sequential v0.5.0
+# github.com/moby/sys/sequential v0.6.0
 ## explicit; go 1.17
 github.com/moby/sys/sequential
-# github.com/moby/sys/user v0.1.0
-## explicit; go 1.17
+# github.com/moby/sys/user v0.2.0
+## explicit; go 1.21
 github.com/moby/sys/user
 # github.com/moby/term v0.5.0
 ## explicit; go 1.18
@@ -145,7 +145,7 @@ github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
-# github.com/redis/go-redis/v9 v9.5.3
+# github.com/redis/go-redis/v9 v9.6.1
 ## explicit; go 1.18
 github.com/redis/go-redis/v9
 github.com/redis/go-redis/v9/internal
@@ -162,18 +162,18 @@ github.com/sirupsen/logrus
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/require
-# go.etcd.io/etcd/api/v3 v3.5.14
+# go.etcd.io/etcd/api/v3 v3.5.15
 ## explicit; go 1.21
 go.etcd.io/etcd/api/v3/version
-# go.etcd.io/etcd/client/pkg/v3 v3.5.14
+# go.etcd.io/etcd/client/pkg/v3 v3.5.15
 ## explicit; go 1.21
 go.etcd.io/etcd/client/pkg/v3/pathutil
 go.etcd.io/etcd/client/pkg/v3/srv
 go.etcd.io/etcd/client/pkg/v3/types
-# go.etcd.io/etcd/client/v2 v2.305.14
+# go.etcd.io/etcd/client/v2 v2.305.15
 ## explicit; go 1.21
 go.etcd.io/etcd/client/v2
-# golang.org/x/sys v0.21.0
+# golang.org/x/sys v0.22.0
 ## explicit; go 1.18
 golang.org/x/sys/unix
 golang.org/x/sys/windows
