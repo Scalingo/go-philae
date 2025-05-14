@@ -62,6 +62,7 @@ type Options struct {
 
 	PoolFIFO        bool
 	PoolSize        int
+	DialTimeout     time.Duration
 	PoolTimeout     time.Duration
 	MinIdleConns    int
 	MaxIdleConns    int
@@ -140,7 +141,10 @@ func (p *ConnPool) checkMinIdleConns() {
 }
 
 func (p *ConnPool) addIdleConn() error {
-	cn, err := p.dialConn(context.TODO(), true)
+	ctx, cancel := context.WithTimeout(context.Background(), p.cfg.DialTimeout)
+	defer cancel()
+
+	cn, err := p.dialConn(ctx, true)
 	if err != nil {
 		return err
 	}
@@ -230,15 +234,19 @@ func (p *ConnPool) tryDial() {
 			return
 		}
 
-		conn, err := p.cfg.Dialer(context.Background())
+		ctx, cancel := context.WithTimeout(context.Background(), p.cfg.DialTimeout)
+
+		conn, err := p.cfg.Dialer(ctx)
 		if err != nil {
 			p.setLastDialError(err)
 			time.Sleep(time.Second)
+			cancel()
 			continue
 		}
 
 		atomic.StoreUint32(&p.dialErrorsNum, 0)
 		_ = conn.Close()
+		cancel()
 		return
 	}
 }
@@ -499,8 +507,6 @@ func (p *ConnPool) Close() error {
 	return firstErr
 }
 
-var zeroTime = time.Time{}
-
 func (p *ConnPool) isHealthyConn(cn *Conn) bool {
 	now := time.Now()
 
@@ -511,12 +517,8 @@ func (p *ConnPool) isHealthyConn(cn *Conn) bool {
 		return false
 	}
 
-	if cn.sysConn != nil {
-		// reset previous timeout.
-		_ = cn.netConn.SetDeadline(zeroTime)
-		if connCheck(cn.sysConn) != nil {
-			return false
-		}
+	if connCheck(cn.netConn) != nil {
+		return false
 	}
 
 	cn.SetUsedAt(now)

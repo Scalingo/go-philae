@@ -2,7 +2,9 @@
 ## explicit; go 1.20
 filippo.io/edwards25519
 filippo.io/edwards25519/field
-# github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1
+# github.com/AdaLogics/go-fuzz-headers v0.0.0-20230811130428-ced1acdcaa24
+## explicit; go 1.20
+# github.com/Azure/go-ansiterm v0.0.0-20250102033503-faa5f7b0171c
 ## explicit; go 1.16
 github.com/Azure/go-ansiterm
 github.com/Azure/go-ansiterm/winterm
@@ -13,15 +15,12 @@ github.com/Microsoft/go-winio/internal/fs
 github.com/Microsoft/go-winio/internal/socket
 github.com/Microsoft/go-winio/internal/stringbuffer
 github.com/Microsoft/go-winio/pkg/guid
-# github.com/Scalingo/go-utils/logger v1.2.0
-## explicit; go 1.17
+# github.com/Scalingo/go-utils/logger v1.5.0
+## explicit; go 1.22.5
 github.com/Scalingo/go-utils/logger
 # github.com/cespare/xxhash/v2 v2.3.0
 ## explicit; go 1.11
 github.com/cespare/xxhash/v2
-# github.com/containerd/containerd v1.7.27
-## explicit; go 1.21
-github.com/containerd/containerd/pkg/userns
 # github.com/containerd/log v0.1.0
 ## explicit; go 1.20
 github.com/containerd/log
@@ -34,7 +33,7 @@ github.com/davecgh/go-spew/spew
 # github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f
 ## explicit
 github.com/dgryski/go-rendezvous
-# github.com/docker/docker v27.1.1+incompatible
+# github.com/docker/docker v27.5.1+incompatible
 ## explicit
 github.com/docker/docker/api/types/blkiodev
 github.com/docker/docker/api/types/container
@@ -63,11 +62,11 @@ github.com/docker/go-connections/nat
 github.com/docker/go-units
 # github.com/frankban/quicktest v1.14.6
 ## explicit; go 1.13
-# github.com/fsouza/go-dockerclient v1.11.2
-## explicit; go 1.21
+# github.com/fsouza/go-dockerclient v1.12.1
+## explicit; go 1.23
 github.com/fsouza/go-dockerclient
-# github.com/go-sql-driver/mysql v1.8.1
-## explicit; go 1.18
+# github.com/go-sql-driver/mysql v1.9.2
+## explicit; go 1.21.0
 github.com/go-sql-driver/mysql
 # github.com/gogo/protobuf v1.3.2
 ## explicit; go 1.15
@@ -81,12 +80,13 @@ github.com/gorilla/mux
 # github.com/json-iterator/go v1.1.12
 ## explicit; go 1.12
 github.com/json-iterator/go
-# github.com/klauspost/compress v1.17.9
-## explicit; go 1.20
+# github.com/klauspost/compress v1.18.0
+## explicit; go 1.22
 github.com/klauspost/compress
 github.com/klauspost/compress/fse
 github.com/klauspost/compress/huff0
 github.com/klauspost/compress/internal/cpuinfo
+github.com/klauspost/compress/internal/le
 github.com/klauspost/compress/internal/snapref
 github.com/klauspost/compress/zstd
 github.com/klauspost/compress/zstd/internal/xxhash
@@ -104,13 +104,13 @@ github.com/moby/patternmatcher
 # github.com/moby/sys/sequential v0.6.0
 ## explicit; go 1.17
 github.com/moby/sys/sequential
-# github.com/moby/sys/user v0.3.0
+# github.com/moby/sys/user v0.4.0
 ## explicit; go 1.17
 github.com/moby/sys/user
 # github.com/moby/sys/userns v0.1.0
 ## explicit; go 1.21
 github.com/moby/sys/userns
-# github.com/moby/term v0.5.0
+# github.com/moby/term v0.5.2
 ## explicit; go 1.18
 github.com/moby/term
 github.com/moby/term/windows
@@ -123,13 +123,13 @@ github.com/modern-go/reflect2
 # github.com/morikuni/aec v1.0.0
 ## explicit
 github.com/morikuni/aec
-# github.com/ncw/swift/v2 v2.0.2
-## explicit; go 1.15
+# github.com/ncw/swift/v2 v2.0.3
+## explicit; go 1.16
 github.com/ncw/swift/v2
 # github.com/opencontainers/go-digest v1.0.0
 ## explicit; go 1.13
 github.com/opencontainers/go-digest
-# github.com/opencontainers/image-spec v1.1.0
+# github.com/opencontainers/image-spec v1.1.1
 ## explicit; go 1.18
 github.com/opencontainers/image-spec/specs-go
 github.com/opencontainers/image-spec/specs-go/v1
@@ -146,7 +146,7 @@ github.com/pkg/errors
 # github.com/pmezard/go-difflib v1.0.0
 ## explicit
 github.com/pmezard/go-difflib/difflib
-# github.com/redis/go-redis/v9 v9.6.3
+# github.com/redis/go-redis/v9 v9.8.0
 ## explicit; go 1.18
 github.com/redis/go-redis/v9
 github.com/redis/go-redis/v9/internal
@@ -159,23 +159,24 @@ github.com/redis/go-redis/v9/internal/util
 # github.com/sirupsen/logrus v1.9.3
 ## explicit; go 1.13
 github.com/sirupsen/logrus
-# github.com/stretchr/testify v1.9.0
+# github.com/stretchr/testify v1.10.0
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
+github.com/stretchr/testify/assert/yaml
 github.com/stretchr/testify/require
-# go.etcd.io/etcd/api/v3 v3.5.15
-## explicit; go 1.21
+# go.etcd.io/etcd/api/v3 v3.5.21
+## explicit; go 1.23.0
 go.etcd.io/etcd/api/v3/version
-# go.etcd.io/etcd/client/pkg/v3 v3.5.15
-## explicit; go 1.21
+# go.etcd.io/etcd/client/pkg/v3 v3.5.21
+## explicit; go 1.23.0
 go.etcd.io/etcd/client/pkg/v3/pathutil
 go.etcd.io/etcd/client/pkg/v3/srv
 go.etcd.io/etcd/client/pkg/v3/types
-# go.etcd.io/etcd/client/v2 v2.305.15
-## explicit; go 1.21
+# go.etcd.io/etcd/client/v2 v2.305.21
+## explicit; go 1.23.0
 go.etcd.io/etcd/client/v2
-# golang.org/x/sys v0.28.0
-## explicit; go 1.18
+# golang.org/x/sys v0.31.0
+## explicit; go 1.23.0
 golang.org/x/sys/unix
 golang.org/x/sys/windows
 # gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127
@@ -193,5 +194,5 @@ gopkg.in/mgo.v2/internal/scram
 # gopkg.in/yaml.v3 v3.0.1
 ## explicit
 gopkg.in/yaml.v3
-# gotest.tools/v3 v3.5.1
+# gotest.tools/v3 v3.5.2
 ## explicit; go 1.17
