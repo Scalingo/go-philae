@@ -1,6 +1,6 @@
 module github.com/Scalingo/go-philae/v5
 
-go 1.20
+go 1.24.3
 
 require (
 	github.com/Scalingo/go-utils/logger v1.2.0
