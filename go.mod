@@ -11,7 +11,7 @@ require (
 	github.com/lib/pq v1.10.9
 	github.com/opensearch-project/opensearch-go v1.1.0
 	github.com/pkg/errors v0.9.1
-	github.com/redis/go-redis/v9 v9.6.1
+	github.com/redis/go-redis/v9 v9.6.3
 	github.com/sirupsen/logrus v1.9.3
 	github.com/stretchr/testify v1.9.0
 	go.etcd.io/etcd/client/v2 v2.305.15
