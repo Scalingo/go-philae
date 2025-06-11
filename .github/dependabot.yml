@@ -6,16 +6,12 @@ updates:
       - dependency-type: "all"
     schedule:
       interval: "monthly"
-    reviewers:
-      - "john-scalingo"
     groups:
       dependencies:
         patterns:
           - "*"
-
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "monthly"
-    reviewers:
-      - "john-scalingo"
+
