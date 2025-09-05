@@ -1,4 +1,4 @@
-# Go Philae v5.2.2
+# Go Philae v5.2.3
 
 Go Philae is the go implementation of our Philae health check protocol.
 
@@ -316,7 +316,7 @@ Bump new version number in:
 Commit, tag and create a new release:
 
 ```sh
-version="5.2.2"
+version="5.2.3"
 
 git switch --create release/${version}
 git add CHANGELOG.md README.md

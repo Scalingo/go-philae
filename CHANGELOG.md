@@ -2,6 +2,10 @@
 
 ## To Be Released
 
+## v5.2.3
+
+* Various Dependabot upgrades
+
 ## v5.2.2
 
 * Various Dependabot upgrades
