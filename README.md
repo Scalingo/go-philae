@@ -1,4 +1,4 @@
-# Go Philae v5.2.3
+# Go Philae v5.2.4
 
 Go Philae is the go implementation of our Philae health check protocol.
 
@@ -316,13 +316,13 @@ Bump new version number in:
 Commit, tag and create a new release:
 
 ```sh
-version="5.2.3"
+version="5.2.4"
 
 git switch --create release/${version}
 git add CHANGELOG.md README.md
 git commit --message="feat: bump v${version}"
 git push --set-upstream origin release/${version}
-gh pr create --reviewer=john-scalingo --fill-first
+gh pr create --reviewer=Scalingo/team-ist --fill-first
 ```
 
 The make a PR. Once the PR is merged:
