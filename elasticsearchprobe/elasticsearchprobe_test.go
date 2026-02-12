@@ -15,13 +15,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func mockSystemPoolWith(ctrl *gomock.Controller, probe *ElasticsearchProbe, ca []byte) {
-	mock := elasticsearchprobemock.NewMockCertPoolGetter(ctrl)
-	mock.EXPECT().SystemPool().Return(DefaultCertPoolGetter{}.FromCustomCA(ca), nil)
-
-	probe.certPool = mock
-}
-
 func TestElasticsearchProbe_Check(t *testing.T) {
 	ctx := context.Background()
 
@@ -70,8 +63,10 @@ func TestElasticsearchProbe_Check(t *testing.T) {
 		t.Run("Using the system CA", func(t *testing.T) {
 			ctrl := gomock.NewController(t)
 
-			probe := NewElasticsearchProbe("test", serv.URL)
-			mockSystemPoolWith(ctrl, &probe, ca.CertificatePEM)
+			mock := elasticsearchprobemock.NewMockCertPoolGetter(ctrl)
+			mock.EXPECT().SystemPool().Return(DefaultCertPoolGetter{}.FromCustomCA(ca.CertificatePEM), nil)
+
+			probe := NewElasticsearchProbe("test", serv.URL, WithCertPoolGetter(mock))
 			err := probe.Check(ctx)
 			require.NoError(t, err)
 		})
