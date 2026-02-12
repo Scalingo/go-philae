@@ -2,6 +2,9 @@
 
 ## To Be Released
 
+## v5.2.5
+* fix(elasticsearch): add a timeout to the probe httpclient to prevent memory leak
+
 ## v5.2.4
 
 * Various Dependabot upgrades
