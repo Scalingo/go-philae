@@ -5,17 +5,20 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"net/http"
+	"time"
 
 	"github.com/opensearch-project/opensearch-go"
 	"github.com/pkg/errors"
 )
 
 type ElasticsearchProbe struct {
-	name     string
-	url      string
-	caCert   []byte
-	insecure bool
-	certPool CertPoolGetter
+	name      string
+	url       string
+	caCert    []byte
+	insecure  bool
+	certPool  CertPoolGetter
+	client    *opensearch.Client
+	clientErr error
 }
 
 type ProbeOpts func(*ElasticsearchProbe)
@@ -29,6 +32,12 @@ func WithInsecureSkipVerify() ProbeOpts {
 func WithCA(caCert []byte) ProbeOpts {
 	return func(esProbe *ElasticsearchProbe) {
 		esProbe.caCert = caCert
+	}
+}
+
+func WithCertPoolGetter(certPool CertPoolGetter) ProbeOpts {
+	return func(esProbe *ElasticsearchProbe) {
+		esProbe.certPool = certPool
 	}
 }
 
@@ -48,6 +57,8 @@ func NewElasticsearchProbe(name, url string, opts ...ProbeOpts) ElasticsearchPro
 		opt(&esProbe)
 	}
 
+	esProbe.client, esProbe.clientErr = esProbe.createClient()
+
 	return esProbe
 }
 
@@ -55,7 +66,7 @@ func (p ElasticsearchProbe) Name() string {
 	return p.name
 }
 
-func (p ElasticsearchProbe) Check(_ context.Context) error {
+func (p *ElasticsearchProbe) createClient() (*opensearch.Client, error) {
 	var certPool *x509.CertPool
 	if p.caCert != nil && len(p.caCert) != 0 {
 		certPool = p.certPool.FromCustomCA(p.caCert)
@@ -63,7 +74,7 @@ func (p ElasticsearchProbe) Check(_ context.Context) error {
 		var err error
 		certPool, err = p.certPool.SystemPool()
 		if err != nil {
-			return errors.Wrap(err, "fail to use system certificate pool")
+			return nil, errors.Wrap(err, "fail to use system certificate pool")
 		}
 	}
 
@@ -74,15 +85,21 @@ func (p ElasticsearchProbe) Check(_ context.Context) error {
 				InsecureSkipVerify: p.insecure,
 				RootCAs:            certPool,
 			},
+			MaxIdleConns:        10,
+			MaxIdleConnsPerHost: 2,
+			IdleConnTimeout:     90 * time.Second,
 		},
 	}
 
-	osClient, err := opensearch.NewClient(cfg)
-	if err != nil {
-		return errors.Wrap(err, "fail to open a new connection to Elasticsearch")
+	return opensearch.NewClient(cfg)
+}
+
+func (p *ElasticsearchProbe) Check(_ context.Context) error {
+	if p.clientErr != nil {
+		return errors.Wrap(p.clientErr, "fail to open a new connection to Elasticsearch")
 	}
 
-	_, err = osClient.Info()
+	_, err := p.client.Info()
 	if err != nil {
 		return errors.Wrap(err, "fail to get elasticsearch info")
 	}
