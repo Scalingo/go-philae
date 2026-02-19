@@ -20,7 +20,7 @@ require (
 )
 
 require (
-	filippo.io/edwards25519 v1.1.0 // indirect
+	filippo.io/edwards25519 v1.1.1 // indirect
 	github.com/containerd/log v0.1.0 // indirect
 	github.com/frankban/quicktest v1.14.6 // indirect
 	github.com/moby/go-archive v0.2.0 // indirect
