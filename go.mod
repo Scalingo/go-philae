@@ -4,7 +4,7 @@ go 1.25.5
 
 require (
 	github.com/Scalingo/go-utils/logger v1.12.2
-	github.com/fsouza/go-dockerclient v1.13.1
+	github.com/fsouza/go-dockerclient v1.13.2
 	github.com/go-sql-driver/mysql v1.10.0
 	github.com/golang/mock v1.6.0
 	github.com/gorilla/mux v1.8.1
@@ -12,10 +12,10 @@ require (
 	github.com/ncw/swift/v2 v2.0.5
 	github.com/opensearch-project/opensearch-go v1.1.0
 	github.com/pkg/errors v0.9.1
-	github.com/redis/go-redis/v9 v9.19.0
+	github.com/redis/go-redis/v9 v9.20.0
 	github.com/sirupsen/logrus v1.9.4
 	github.com/stretchr/testify v1.11.1
-	go.etcd.io/etcd/client/v2 v2.305.29
+	go.etcd.io/etcd/client/v2 v2.305.30
 	gopkg.in/errgo.v1 v1.0.1
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 )
@@ -45,9 +45,9 @@ require (
 	github.com/opencontainers/go-digest v1.0.0 // indirect
 	github.com/opencontainers/image-spec v1.1.1 // indirect
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
-	go.etcd.io/etcd/api/v3 v3.6.10 // indirect
-	go.etcd.io/etcd/client/pkg/v3 v3.6.10 // indirect
+	go.etcd.io/etcd/api/v3 v3.6.11 // indirect
+	go.etcd.io/etcd/client/pkg/v3 v3.6.11 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	golang.org/x/sys v0.43.0 // indirect
+	golang.org/x/sys v0.44.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
