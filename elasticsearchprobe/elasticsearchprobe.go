@@ -45,7 +45,7 @@ func WithCertPoolGetter(certPool CertPoolGetter) ProbeOpts {
 // - name: probe name
 // - url : connection string with the form "http://username:password@example.com"
 // - opts: optionnal parameters such as providing a TLS CA certificate or allowing insecure connections
-func NewElasticsearchProbe(name, url string, opts ...ProbeOpts) ElasticsearchProbe {
+func NewElasticsearchProbe(name, url string, opts ...ProbeOpts) *ElasticsearchProbe {
 	esProbe := ElasticsearchProbe{
 		name:     name,
 		url:      url,
@@ -59,7 +59,7 @@ func NewElasticsearchProbe(name, url string, opts ...ProbeOpts) ElasticsearchPro
 
 	esProbe.client, esProbe.clientErr = esProbe.createClient()
 
-	return esProbe
+	return &esProbe
 }
 
 func (p ElasticsearchProbe) Name() string {

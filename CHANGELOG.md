@@ -1,6 +1,7 @@
 # Changelog
 
 ## To Be Released
+* fix(elasticsearch): fix the probe creation method to return a pointer struct
 
 ## v5.2.6
 
