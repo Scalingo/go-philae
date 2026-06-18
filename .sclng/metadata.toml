@@ -1,0 +1,6 @@
+description = "Philae library implementation in go: probing backend service to build healthcheck endpoints"
+flags = ["lib"]
+languages = ["go"]
+owner = "team-sre@scalingo.com"
+team = "SRE"
+version = "5.2.7"
