@@ -162,7 +162,7 @@ func (p *Prober) checkOneProbe(ctx context.Context, probe Probe, res chan *Probe
 	}
 
 	probe_healthy := true
-	duration := time.Now().Sub(begin)
+	duration := time.Since(begin)
 	comment := fmt.Sprintf("took %v", duration)
 	if err != nil {
 		err = errgo.Notef(err, "probe check failed")

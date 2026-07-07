@@ -109,7 +109,7 @@ func TestProber(t *testing.T) {
 		p := NewProber(WithTimeout(5 * time.Millisecond))
 		p.AddProbe(sampleprobe.NewTimedSampleProbe("test", true, 20*time.Millisecond))
 
-		for i := 0; i < 50; i++ {
+		for range 50 {
 			res := p.CheckOneProbe(ctx, "test")
 			assert.False(t, res.Healthy)
 			assert.Equal(t, "test", res.Name)
