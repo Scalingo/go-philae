@@ -3,6 +3,7 @@ package prober
 import (
 	"context"
 	"errors"
+	"runtime"
 	"strings"
 	"testing"
 	"time"
@@ -67,7 +68,7 @@ func TestProber(t *testing.T) {
 		p.AddProbe(sampleprobe.NewTimedSampleProbe("test2", true, 300*time.Millisecond))
 		start := time.Now()
 		res := p.Check(ctx)
-		duration := time.Now().Sub(start)
+		duration := time.Since(start)
 
 		assert.True(t, duration < 205*time.Millisecond)
 		assert.True(t, duration > 200*time.Millisecond)
@@ -100,6 +101,25 @@ func TestProber(t *testing.T) {
 		assert.Equal(t, "test", res.Name)
 		assert.Equal(t, "error", res.Comment)
 		assert.Equal(t, "probe check failed: prober: context deadline exceeded", res.Error.Error())
+	})
+
+	t.Run("With repeated single probe timeouts no goroutines leak", func(t *testing.T) {
+		baselineGoroutines := runtime.NumGoroutine()
+
+		p := NewProber(WithTimeout(5 * time.Millisecond))
+		p.AddProbe(sampleprobe.NewTimedSampleProbe("test", true, 20*time.Millisecond))
+
+		for i := 0; i < 50; i++ {
+			res := p.CheckOneProbe(ctx, "test")
+			assert.False(t, res.Healthy)
+			assert.Equal(t, "test", res.Name)
+			assert.Equal(t, "error", res.Comment)
+			assert.Equal(t, "probe check failed: prober: context deadline exceeded", res.Error.Error())
+		}
+
+		assert.Eventually(t, func() bool {
+			return runtime.NumGoroutine() <= baselineGoroutines+5
+		}, 500*time.Millisecond, 10*time.Millisecond)
 	})
 
 	t.Run("With a single healthy probe", func(t *testing.T) {
