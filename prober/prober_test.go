@@ -91,14 +91,14 @@ func TestProber(t *testing.T) {
 	t.Run("With a single probe timeout no goroutines leak", func(t *testing.T) {
 		defer goleak.VerifyNone(t)
 
-		p := NewProber(WithTimeout(5 * time.Millisecond))
-		p.AddProbe(sampleprobe.NewTimedSampleProbe("test", true, 20*time.Millisecond))
+		p := NewProber(WithTimeout(200 * time.Millisecond))
+		p.AddProbe(sampleprobe.NewTimedSampleProbe("test", true, 300*time.Millisecond))
 
 		start := time.Now()
 		res := p.CheckOneProbe(ctx, "test")
 		duration := time.Since(start)
 
-		assert.True(t, duration > 5*time.Millisecond)
+		assert.Greater(t, duration, 200*time.Millisecond)
 		assert.False(t, res.Healthy)
 		assert.Equal(t, "test", res.Name)
 		assert.Equal(t, "error", res.Comment)
