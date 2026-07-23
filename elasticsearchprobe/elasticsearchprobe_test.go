@@ -2,13 +2,12 @@ package elasticsearchprobe
 
 import (
 	"context"
-	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 
 	"github.com/golang/mock/gomock"
-	"github.com/opensearch-project/opensearch-go"
+	"go.uber.org/goleak"
 
 	"github.com/Scalingo/go-philae/v5/elasticsearchprobe/elasticsearchprobemock"
 	"github.com/Scalingo/go-philae/v5/internal/tests"
@@ -16,28 +15,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
-
-type trackingTransport struct {
-	closed bool
-}
-
-func (t *trackingTransport) Read(_ []byte) (int, error) {
-	return 0, io.EOF
-}
-
-func (t *trackingTransport) Close() error {
-	t.closed = true
-	return nil
-}
-
-func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	return &http.Response{
-		StatusCode: http.StatusOK,
-		Header:     make(http.Header),
-		Body:       t,
-		Request:    req,
-	}, nil
-}
 
 func TestElasticsearchProbe_Check(t *testing.T) {
 	ctx := context.Background()
@@ -96,19 +73,18 @@ func TestElasticsearchProbe_Check(t *testing.T) {
 		})
 	})
 
-	t.Run("It should close the info response body", func(t *testing.T) {
-		transport := &trackingTransport{}
-		client, err := opensearch.NewClient(opensearch.Config{
-			Addresses:            []string{"http://example.com"},
-			UseResponseCheckOnly: true,
-			Transport:            transport,
-		})
-		require.NoError(t, err)
+	t.Run("It should close the info body", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
 
-		probe := &ElasticsearchProbe{client: client}
+		serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"version":{"distribution":"opensearch","number":"X.Y.Z"}}`))
+		}))
+		defer serv.Close()
 
-		err = probe.Check(ctx)
+		probe := NewElasticsearchProbe("test", serv.URL)
+		err := probe.Check(context.Background())
 		require.NoError(t, err)
-		require.True(t, transport.closed)
 	})
+
 }
