@@ -68,7 +68,7 @@ func (p ElasticsearchProbe) Name() string {
 
 func (p *ElasticsearchProbe) createClient() (*opensearch.Client, error) {
 	var certPool *x509.CertPool
-	if p.caCert != nil && len(p.caCert) != 0 {
+	if len(p.caCert) != 0 {
 		certPool = p.certPool.FromCustomCA(p.caCert)
 	} else {
 		var err error
@@ -99,7 +99,10 @@ func (p *ElasticsearchProbe) Check(_ context.Context) error {
 		return errors.Wrap(p.clientErr, "fail to open a new connection to Elasticsearch")
 	}
 
-	_, err := p.client.Info()
+	resp, err := p.client.Info()
+	if resp != nil {
+		defer resp.Body.Close()
+	}
 	if err != nil {
 		return errors.Wrap(err, "fail to get elasticsearch info")
 	}

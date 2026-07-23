@@ -7,6 +7,7 @@ import (
 	"testing"
 
 	"github.com/golang/mock/gomock"
+	"go.uber.org/goleak"
 
 	"github.com/Scalingo/go-philae/v5/elasticsearchprobe/elasticsearchprobemock"
 	"github.com/Scalingo/go-philae/v5/internal/tests"
@@ -14,6 +15,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func TestMain(m *testing.M) {
+	goleak.VerifyTestMain(m)
+}
 
 func TestElasticsearchProbe_Check(t *testing.T) {
 	ctx := context.Background()
@@ -71,4 +76,17 @@ func TestElasticsearchProbe_Check(t *testing.T) {
 			require.NoError(t, err)
 		})
 	})
+
+	t.Run("It should close the info body", func(t *testing.T) {
+		serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(`{"version":{"distribution":"opensearch","number":"X.Y.Z"}}`))
+		}))
+		defer serv.Close()
+
+		probe := NewElasticsearchProbe("test", serv.URL)
+		err := probe.Check(t.Context())
+		require.NoError(t, err)
+	})
+
 }
