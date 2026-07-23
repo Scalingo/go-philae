@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/goleak"
 
 	"github.com/Scalingo/go-philae/v5/sampleprobe"
 )
@@ -67,7 +68,7 @@ func TestProber(t *testing.T) {
 		p.AddProbe(sampleprobe.NewTimedSampleProbe("test2", true, 300*time.Millisecond))
 		start := time.Now()
 		res := p.Check(ctx)
-		duration := time.Now().Sub(start)
+		duration := time.Since(start)
 
 		assert.True(t, duration < 205*time.Millisecond)
 		assert.True(t, duration > 200*time.Millisecond)
@@ -87,7 +88,9 @@ func TestProber(t *testing.T) {
 		assert.False(t, res.Probes[1].Healthy)
 	})
 
-	t.Run("With a single probe that times out", func(t *testing.T) {
+	t.Run("With a single probe timeout no goroutines leak", func(t *testing.T) {
+		defer goleak.VerifyNone(t)
+
 		p := NewProber(WithTimeout(200 * time.Millisecond))
 		p.AddProbe(sampleprobe.NewTimedSampleProbe("test", true, 300*time.Millisecond))
 
@@ -95,7 +98,7 @@ func TestProber(t *testing.T) {
 		res := p.CheckOneProbe(ctx, "test")
 		duration := time.Since(start)
 
-		assert.True(t, duration > 200*time.Millisecond)
+		assert.Greater(t, duration, 200*time.Millisecond)
 		assert.False(t, res.Healthy)
 		assert.Equal(t, "test", res.Name)
 		assert.Equal(t, "error", res.Comment)
