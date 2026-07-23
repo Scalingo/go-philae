@@ -148,7 +148,7 @@ func (p *Prober) CheckOneProbe(ctx context.Context, probeName string) *ProbeResu
 }
 
 func (p *Prober) checkOneProbe(ctx context.Context, probe Probe, res chan *ProbeResult) {
-	probeRes := make(chan error)
+	probeRes := make(chan error, 1)
 	var err error
 
 	begin := time.Now()
@@ -162,7 +162,7 @@ func (p *Prober) checkOneProbe(ctx context.Context, probe Probe, res chan *Probe
 	}
 
 	probe_healthy := true
-	duration := time.Now().Sub(begin)
+	duration := time.Since(begin)
 	comment := fmt.Sprintf("took %v", duration)
 	if err != nil {
 		err = errgo.Notef(err, "probe check failed")
