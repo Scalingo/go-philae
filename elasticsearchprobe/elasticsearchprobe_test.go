@@ -83,7 +83,7 @@ func TestElasticsearchProbe_Check(t *testing.T) {
 		defer serv.Close()
 
 		probe := NewElasticsearchProbe("test", serv.URL)
-		err := probe.Check(context.Background())
+		err := probe.Check(t.Context())
 		require.NoError(t, err)
 	})
 
