@@ -322,7 +322,7 @@ git switch --create release/${version}
 git add CHANGELOG.md README.md
 git commit --message="feat: bump v${version}"
 git push --set-upstream origin release/${version}
-gh pr create --reviewer=Scalingo/team-ist --fill-first
+gh pr create --reviewer=Scalingo/team-sre --fill-first
 ```
 
 The make a PR. Once the PR is merged:
