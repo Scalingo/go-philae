@@ -4,3 +4,7 @@ languages = ["go"]
 owner = "team-sre@scalingo.com"
 team = "SRE"
 version = "5.2.7"
+tier = 1
+dependencies = []
+destination_server = []
+
