@@ -13,6 +13,10 @@ import (
 	"github.com/Scalingo/go-philae/v5/sampleprobe"
 )
 
+func TestMain(m *testing.M) {
+	goleak.VerifyTestMain(m)
+}
+
 func TestProber(t *testing.T) {
 	ctx := context.Background()
 	t.Run("With healthy probes", func(t *testing.T) {
@@ -89,8 +93,6 @@ func TestProber(t *testing.T) {
 	})
 
 	t.Run("With a single probe timeout no goroutines leak", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
-
 		p := NewProber(WithTimeout(200 * time.Millisecond))
 		p.AddProbe(sampleprobe.NewTimedSampleProbe("test", true, 300*time.Millisecond))
 

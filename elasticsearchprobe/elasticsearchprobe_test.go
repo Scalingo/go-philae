@@ -16,6 +16,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestMain(m *testing.M) {
+	goleak.VerifyTestMain(m)
+}
+
 func TestElasticsearchProbe_Check(t *testing.T) {
 	ctx := context.Background()
 
@@ -74,8 +78,6 @@ func TestElasticsearchProbe_Check(t *testing.T) {
 	})
 
 	t.Run("It should close the info body", func(t *testing.T) {
-		defer goleak.VerifyNone(t)
-
 		serv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write([]byte(`{"version":{"distribution":"opensearch","number":"X.Y.Z"}}`))
