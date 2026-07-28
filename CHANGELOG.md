@@ -2,7 +2,14 @@
 
 ## To Be Released
 
+## v5.2.8
+
+* fix(prober): change error channel to buffered for CheckOneProbe
+* fix(elasticsearch): ensure response body from Elasticsearch info is properly closed
+* chore(asgard): various Asgard upgrades
+
 ## v5.2.7
+
 * fix(elasticsearch): fix the probe creation method to return a pointer struct
 
 ## v5.2.6
