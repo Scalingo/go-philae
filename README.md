@@ -1,4 +1,4 @@
-# Go Philae v5.2.7
+# Go Philae
 
 Go Philae is the go implementation of our Philae health check protocol.
 
@@ -311,15 +311,16 @@ Options:
 Bump new version number in:
 
 - `CHANGELOG.md`
-- `README.md`
+- `.sclng/metadata.toml`
 
 Commit, tag and create a new release:
 
 ```sh
-version="5.2.7"
+# Replace with the version you are releasing
+version="X.Y.Z"
 
 git switch --create release/${version}
-git add CHANGELOG.md README.md
+git add CHANGELOG.md .sclng/metadata.toml
 git commit --message="feat: bump v${version}"
 git push --set-upstream origin release/${version}
 gh pr create --reviewer=Scalingo/team-sre --fill-first
